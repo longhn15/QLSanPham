@@ -1,0 +1,34 @@
+com.student.flashsale
+├── config/                  # Cấu hình toàn bộ hệ thống (Security, Redis, WebSocket...)
+├── common/                  # Các hằng số, tiện ích dùng chung
+├── controller/              # Nơi nhận request (chia ra API và View)
+│   ├── api/                 # REST API cho Mobile/Frontend (trả về JSON)
+│   └── view/                # Controller trả về giao diện Thymeleaf (trả về HTML)
+├── dto/                     # Data Transfer Object (Dữ liệu luân chuyển)
+│   ├── request/             # Dữ liệu đầu vào (Form submit)
+│   └── response/            # Dữ liệu đầu ra (JSON/View Model)
+├── entity/                  # Các bảng trong Database (JPA Entities)
+├── repository/              # Tầng giao tiếp Database (JPA Repository)
+├── service/                 # Tầng nghiệp vụ (Business Logic)
+│   └── impl/                # Triển khai code nghiệp vụ thực tế
+├── mapper/                  # Chuyển đổi giữa Entity <-> DTO (Dùng MapStruct)
+├── security/                # Cấu hình chi tiết Security (UserDetailService)
+├── integration/             # Gọi API bên thứ 3 (Payment, Tỷ giá...)
+├── exception/               # Xử lý lỗi tập trung (Global Exception Handling)
+└── aspect/                  # AOP (Logging, đo thời gian chạy query)
+
+1. Tính kế thừa (BaseEntity): 
+    Giảng viên nhìn vào sẽ thấy bạn biết cách tái sử dụng code, tránh lặp lại (DRY Principle).
+2. Hiệu năng (FetchType.LAZY):
+    Khi bạn gọi orderRepository.findById(1), Hibernate chỉ lấy thông tin đơn hàng, KHÔNG lấy thông tin User hay Product chi tiết ngay lập tức.
+    Điều này giúp câu lệnh SQL cực nhẹ. Khi nào cần (order.getUser().getName()) thì nó mới query tiếp.
+3. Toàn vẹn dữ liệu (@Version):
+    Trường version trong Product và FlashSaleItem chứng tỏ bạn đã tính toán đến bài toán nhiều người cùng mua/cùng sửa 1 lúc. Đây là điểm khác biệt giữa Senior và Junior.
+4. Clean Code (Lombok & Builder):
+    Code nhìn rất gọn, không có các getter/setter dài dòng.
+    Dùng Pattern Builder (User.builder().username("...").build()) giúp việc khởi tạo đối tượng dễ đọc hơn rất nhiều.
+
+
+Để BaseEntity hoạt động (tự động điền ngày tạo), bạn cần thêm annotation @EnableJpaAuditing vào file main application:
+
+Bước tiếp theo cực kỳ quan trọng, đó là Xây dựng tầng Kết nối & Cấu hình (Infrastructure & Configuration). Đây là "khung xương" để ứng dụng chạy được trước khi viết logic nghiệp vụ.

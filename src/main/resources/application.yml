@@ -1,0 +1,35 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;databaseName=QLSanPham;encrypt=true;trustServerCertificate=true
+    username: sa
+    password: 123
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  
+  jpa:
+    hibernate:
+      ddl-auto: validate # Validate với schema đã tạo bằng SQL script
+    show-sql: true # Để debug câu query xem có tối ưu không
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.SQLServerDialect
+
+  # Cấu hình Redis (Điểm ăn tiền)
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2000 # 2s
+
+  # Cấu hình Thymeleaf
+  thymeleaf:
+    cache: false # Tắt cache khi dev để sửa HTML không cần restart server
+
+# Cấu hình Logging (Quan trọng để monitor)
+logging:
+  level:
+    com.example.QLSanPham: DEBUG
+    org.springframework.security: INFO

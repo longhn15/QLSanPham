@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechShop - Săn Sale Giờ Vàng</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#ee4d2d', // Màu cam Shopee
+                        primary: '#1a202c',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Hiệu ứng rung nhẹ cho đồng hồ để gây chú ý */
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+        }
+        .timer-box {
+            animation: pulse-red 2s infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans text-gray-800">
+
+    <!-- 1. HEADER (Cố định) -->
+    <header class="sticky top-0 z-50 bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2 cursor-pointer">
+                    <i class="fas fa-bolt text-3xl text-yellow-300"></i>
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tighter">TECH<span class="text-yellow-300">SALE</span></h1>
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="hidden md:flex flex-1 mx-10 relative">
+                    <input type="text" placeholder="Săn iPhone 15 giá 1K..." class="w-full py-2 px-4 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                    <button class="absolute right-0 top-0 h-full px-6 bg-yellow-400 rounded-r-lg text-red-700 font-bold hover:bg-yellow-300">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+
+                <!-- Icons -->
+                <div class="flex items-center space-x-6">
+                    <div class="relative cursor-pointer">
+                        <i class="fas fa-shopping-cart text-2xl"></i>
+                        <span class="absolute -top-2 -right-2 bg-yellow-400 text-red-600 text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">3</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer space-x-2">
+                        <img src="https://i.pravatar.cc/150?img=3" alt="Avatar" class="w-8 h-8 rounded-full border-2 border-white">
+                        <span class="font-medium hidden lg:block">Nguyễn Văn A</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. HERO BANNER -->
+    <div class="container mx-auto px-4 mt-6">
+        <div class="rounded-xl overflow-hidden shadow-xl relative h-64 bg-gray-900 flex items-center">
+            <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80" class="absolute w-full h-full object-cover opacity-60">
+            <div class="relative z-10 px-10">
+                <span class="bg-red-600 text-white px-3 py-1 rounded text-sm font-bold mb-2 inline-block">SỰ KIỆN HOT</span>
+                <h2 class="text-4xl font-extrabold text-white mb-4">Siêu Sale Giữa Tháng 12.12</h2>
+                <p class="text-gray-200 mb-6 text-lg">Săn voucher giảm giá 50% cho toàn bộ ngành hàng điện tử.</p>
+                <button class="bg-yellow-400 text-red-800 font-bold py-2 px-6 rounded-lg hover:bg-yellow-300 transition transform hover:scale-105">
+                    Xem Chi Tiết
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. FLASH SALE SECTION (Phần quan trọng nhất) -->
+    <div class="container mx-auto px-4 mt-8">
+        <!-- Flash Sale Header -->
+        <div class="bg-white rounded-t-xl p-4 flex flex-col md:flex-row justify-between items-center border-b-4 border-red-500 shadow-sm">
+            <div class="flex items-center space-x-4 mb-4 md:mb-0">
+                <div class="text-3xl font-black italic text-red-600 flex items-center">
+                    <i class="fas fa-bolt text-yellow-500 mr-2 animate-bounce"></i> FLASH SALE
+                </div>
+                <!-- Countdown Timer -->
+                <div class="flex items-center space-x-2 text-white font-bold">
+                    <span class="bg-black p-2 rounded text-xl" id="hour">02</span>
+                    <span class="text-black text-xl">:</span>
+                    <span class="bg-black p-2 rounded text-xl" id="minute">14</span>
+                    <span class="text-black text-xl">:</span>
+                    <span class="bg-red-600 p-2 rounded text-xl timer-box" id="second">45</span>
+                </div>
+            </div>
+            <a href="#" class="text-gray-500 hover:text-red-500 font-medium flex items-center">
+                Xem tất cả <i class="fas fa-chevron-right ml-1"></i>
+            </a>
+        </div>
+
+        <!-- Flash Sale Items List -->
+        <div class="bg-white p-6 shadow-md rounded-b-xl">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                
+                <!-- Product Card 1: HOT -->
+                <div class="border border-red-100 rounded-lg p-3 hover:shadow-xl transition relative group">
+                    <div class="absolute top-0 left-0 bg-yellow-400 text-red-700 text-xs font-bold px-2 py-1 rounded-tl-lg z-10">
+                        -45%
+                    </div>
+                    <div class="relative overflow-hidden">
+                        <img src="https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/iphone-15-pro-max-natural-titanium-select-202309?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1693510979606" alt="iPhone 15" class="w-full h-48 object-contain mb-4 transform group-hover:scale-110 transition duration-300">
+                    </div>
+                    <h3 class="text-sm font-medium text-gray-700 line-clamp-2 h-10 mb-2">iPhone 15 Pro Max 256GB Titan Tự Nhiên</h3>
+                    
+                    <div class="flex items-end justify-between mb-2">
+                        <div>
+                            <p class="text-xs text-gray-400 line-through">34.990.000₫</p>
+                            <p class="text-lg font-bold text-red-600">19.990.000₫</p>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar (Quan trọng) -->
+                    <div class="relative w-full h-4 bg-red-100 rounded-full overflow-hidden">
+                        <!-- Phần trăm đã bán -->
+                        <div class="absolute top-0 left-0 h-full bg-red-600" style="width: 92%"></div>
+                        <!-- Text đè lên -->
+                        <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-[10px] font-bold text-white z-10">
+                            <i class="fas fa-fire mr-1"></i> Đã bán 92%
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Card 2: Sắp hết -->
+                <div class="border border-gray-100 rounded-lg p-3 hover:shadow-lg transition relative group">
+                    <div class="absolute top-0 left-0 bg-yellow-400 text-red-700 text-xs font-bold px-2 py-1 rounded-tl-lg z-10">
+                        -20%
+                    </div>
+                    <img src="https://images.samsung.com/is/image/samsung/p6pim/vn/s24-ultra/gallery/vn-galaxy-s24-s928-sm-s928bzkwxxv-thumb-539297672" class="w-full h-48 object-contain mb-4 transform group-hover:scale-110 transition">
+                    <h3 class="text-sm font-medium text-gray-700 line-clamp-2 h-10 mb-2">Samsung Galaxy S24 Ultra 512GB</h3>
+                    
+                    <div class="flex items-end justify-between mb-2">
+                        <div>
+                            <p class="text-xs text-gray-400 line-through">28.000.000₫</p>
+                            <p class="text-lg font-bold text-red-600">22.400.000₫</p>
+                        </div>
+                    </div>
+
+                    <div class="relative w-full h-4 bg-red-100 rounded-full overflow-hidden">
+                        <div class="absolute top-0 left-0 h-full bg-red-500" style="width: 45%"></div>
+                        <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-[10px] font-bold text-white z-10">
+                            Đã bán 45%
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Card 3: Vừa mở bán -->
+                <div class="border border-gray-100 rounded-lg p-3 hover:shadow-lg transition relative group">
+                    <div class="absolute top-0 left-0 bg-yellow-400 text-red-700 text-xs font-bold px-2 py-1 rounded-tl-lg z-10">
+                        -50%
+                    </div>
+                    <img src="https://cdn.tgdd.vn/Products/Images/44/231244/macbook-air-m1-2020-gray-600x600.jpg" class="w-full h-48 object-contain mb-4 transform group-hover:scale-110 transition">
+                    <h3 class="text-sm font-medium text-gray-700 line-clamp-2 h-10 mb-2">MacBook Air M1 2020 8GB/256GB</h3>
+                    
+                    <div class="flex items-end justify-between mb-2">
+                        <div>
+                            <p class="text-xs text-gray-400 line-through">19.000.000₫</p>
+                            <p class="text-lg font-bold text-red-600">14.500.000₫</p>
+                        </div>
+                    </div>
+
+                    <div class="relative w-full h-4 bg-gray-200 rounded-full overflow-hidden">
+                        <div class="absolute top-0 left-0 h-full bg-red-500" style="width: 5%"></div>
+                        <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-[10px] font-bold text-gray-600 z-10">
+                            Vừa mở bán
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Card 4: Sold Out (Quan trọng để demo logic) -->
+                <div class="border border-gray-100 rounded-lg p-3 opacity-60 relative cursor-not-allowed">
+                    <!-- Overlay Hết hàng -->
+                    <div class="absolute inset-0 bg-gray-100 bg-opacity-50 z-20 flex items-center justify-center">
+                        <div class="bg-black text-white px-4 py-2 rounded-full font-bold transform -rotate-12">HẾT HÀNG</div>
+                    </div>
+                    
+                    <img src="https://cdn.tgdd.vn/Products/Images/42/264060/samsung-galaxy-s21-fe-violet-1-600x600.jpg" class="w-full h-48 object-contain mb-4 grayscale">
+                    <h3 class="text-sm font-medium text-gray-700 line-clamp-2 h-10 mb-2">Samsung S21 FE 5G (8GB/128GB)</h3>
+                    
+                    <div class="flex items-end justify-between mb-2">
+                        <div>
+                            <p class="text-xs text-gray-400 line-through">12.000.000₫</p>
+                            <p class="text-lg font-bold text-gray-500">8.990.000₫</p>
+                        </div>
+                    </div>
+
+                    <div class="relative w-full h-4 bg-gray-300 rounded-full overflow-hidden">
+                        <div class="absolute top-0 left-0 h-full bg-gray-500" style="width: 100%"></div>
+                        <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-[10px] font-bold text-white z-10">
+                            Đã bán 100%
+                        </div>
+                    </div>
+                </div>
+                
+                 <!-- Product Card 5: Normal -->
+                 <div class="border border-gray-100 rounded-lg p-3 hover:shadow-lg transition relative group">
+                    <div class="absolute top-0 left-0 bg-yellow-400 text-red-700 text-xs font-bold px-2 py-1 rounded-tl-lg z-10">
+                        -10%
+                    </div>
+                    <img src="https://cdn.tgdd.vn/Products/Images/7264/309731/dong-ho-thong-minh-xiaomi-watch-2-pro-den-thumb-1-600x600.jpg" class="w-full h-48 object-contain mb-4 transform group-hover:scale-110 transition">
+                    <h3 class="text-sm font-medium text-gray-700 line-clamp-2 h-10 mb-2">Xiaomi Watch 2 Pro 46mm</h3>
+                    
+                    <div class="flex items-end justify-between mb-2">
+                        <div>
+                            <p class="text-xs text-gray-400 line-through">5.000.000₫</p>
+                            <p class="text-lg font-bold text-red-600">4.500.000₫</p>
+                        </div>
+                    </div>
+
+                    <div class="relative w-full h-4 bg-red-100 rounded-full overflow-hidden">
+                        <div class="absolute top-0 left-0 h-full bg-red-500" style="width: 15%"></div>
+                        <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-[10px] font-bold text-white z-10">
+                            Đã bán 15%
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. PRODUCT DETAIL SECTION (Giả lập trang chi tiết khi bấm vào sản phẩm) -->
+    <div class="container mx-auto px-4 mt-12 mb-20">
+        <h3 class="text-xl font-bold mb-4 text-gray-500 border-l-4 border-gray-800 pl-3">DEMO: Trang Chi Tiết (Khi click vào iPhone)</h3>
+        
+        <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col md:flex-row gap-8">
+            <!-- Left: Images -->
+            <div class="w-full md:w-1/3">
+                <img src="https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/iphone-15-pro-max-natural-titanium-select-202309?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1693510979606" class="w-full h-auto rounded-lg border border-gray-200">
+                <div class="flex mt-4 gap-2">
+                    <div class="w-1/4 border-2 border-red-500 rounded p-1 cursor-pointer"><img src="https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/iphone-15-pro-max-natural-titanium-select-202309?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1693510979606" class="w-full"></div>
+                    <div class="w-1/4 border border-gray-200 rounded p-1 cursor-pointer"><img src="https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/iphone-15-pro-max-natural-titanium-select-202309?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1693510979606" class="w-full"></div>
+                </div>
+            </div>
+
+            <!-- Right: Info -->
+            <div class="flex-1">
+                <h1 class="text-2xl font-bold text-gray-800 mb-2">iPhone 15 Pro Max 256GB Titan Tự Nhiên - Chính Hãng VN/A</h1>
+                
+                <!-- Flash Sale Banner in Product Detail -->
+                <div class="bg-gradient-to-r from-red-600 to-orange-500 text-white p-3 rounded-lg flex justify-between items-center mb-4">
+                    <div class="flex items-center">
+                        <i class="fas fa-stopwatch text-2xl mr-2"></i>
+                        <div>
+                            <p class="text-xs font-bold uppercase opacity-80">Flash Sale kết thúc sau</p>
+                            <p class="text-lg font-bold">02 : 14 : 45</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="bg-white text-red-600 text-xs font-bold px-2 py-1 rounded">ĐANG BÁN CHẠY</span>
+                    </div>
+                </div>
+
+                <div class="flex items-end gap-4 mb-6">
+                    <span class="text-4xl font-bold text-red-600">19.990.000₫</span>
+                    <span class="text-xl text-gray-400 line-through mb-1">34.990.000₫</span>
+                    <span class="bg-red-100 text-red-600 px-2 py-1 rounded font-bold text-sm mb-2">-45%</span>
+                </div>
+
+                <!-- Stock Real-time -->
+                <div class="mb-6">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="font-bold text-gray-600">Đã bán 92/100</span>
+                        <span class="text-red-500 font-bold animate-pulse">Chỉ còn 8 sản phẩm!</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div class="bg-red-600 h-3 rounded-full" style="width: 92%"></div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex gap-4">
+                    <div class="flex items-center border border-gray-300 rounded">
+                        <button class="px-4 py-2 hover:bg-gray-100">-</button>
+                        <input type="text" value="1" class="w-12 text-center focus:outline-none">
+                        <button class="px-4 py-2 hover:bg-gray-100">+</button>
+                    </div>
+                    <button class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg shadow-lg transform transition active:scale-95">
+                        <i class="fas fa-bolt mr-2"></i> MUA NGAY
+                    </button>
+                    <button class="flex-1 bg-yellow-100 text-yellow-800 border border-yellow-400 font-bold py-3 rounded-lg hover:bg-yellow-200">
+                        <i class="fas fa-cart-plus mr-2"></i> THÊM VÀO GIỎ
+                    </button>
+                </div>
+                
+                <p class="mt-4 text-xs text-gray-500">
+                    <i class="fas fa-shield-alt text-green-500 mr-1"></i> Cam kết chính hãng 100%
+                    <span class="mx-2">|</span>
+                    <i class="fas fa-truck text-blue-500 mr-1"></i> Miễn phí vận chuyển
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Countdown Timer -->
+    <script>
+        // Simple script to make the timer work for demo purpose
+        let time = 2 * 3600 + 14 * 60 + 45; // 2h 14m 45s
+        
+        function updateTimer() {
+            const h = Math.floor(time / 3600);
+            const m = Math.floor((time % 3600) / 60);
+            const s = time % 60;
+            
+            document.getElementById('hour').innerText = h < 10 ? '0' + h : h;
+            document.getElementById('minute').innerText = m < 10 ? '0' + m : m;
+            document.getElementById('second').innerText = s < 10 ? '0' + s : s;
+            
+            if (time > 0) {
+                time--;
+            }
+        }
+        
+        setInterval(updateTimer, 1000);
+    </script>
+</body>
+</html>
