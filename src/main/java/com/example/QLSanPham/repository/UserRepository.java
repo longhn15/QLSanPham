@@ -1,5 +1,6 @@
 package com.example.QLSanPham.repository;
 
+import java.util.List;
 
 import java.util.Optional;
 
@@ -14,10 +15,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // Dùng Optional để tránh NullPointerException khi code Service
     Optional<User> findByUsername(String username);
     
-    Optional<User> findByEmail(String email);
-
     // Kiểm tra tồn tại cực nhanh (trả về boolean thay vì bê cả entity lên)
     boolean existsByUsername(String username);
-    
+
+    Optional<User> findByEmail(String email);
+
     boolean existsByEmail(String email);
+    
+    // Phương thức hỗ trợ data seeding: Tìm tất cả user theo role
+    List<User> findByRole(String role);
 }

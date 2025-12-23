@@ -11,27 +11,31 @@ import javax.imageio.ImageIO;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-// import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-// import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-// import com.example.QLSanPham.service.impl.UserService;
+import com.example.QLSanPham.dto.request.RegisterRequestDTO;
+import com.example.QLSanPham.service.impl.UserService;
+
+import jakarta.validation.Valid;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/login")
+@RequestMapping("")
 public class AuthController {
 
-    // @Autowired
-    // private final UserService userService;
+    private final UserService userService;
 
-    @GetMapping()
+    @GetMapping("/login")
     public String showLoginForm(@RequestParam(required = false) String error,
             @RequestParam(required = false) String captchaError, Model model, HttpSession session) {
         if ("true".equals(error)) {
@@ -95,26 +99,33 @@ public class AuthController {
         ImageIO.write(image, "png", response.getOutputStream());
     }
 
-    // @GetMapping("/register")
-    // public String registerPage(Model model) {
-    // model.addAttribute("user", new RegisterRequestDTO());
-    // return "auth/register";
-    // }
+    @GetMapping("/register")
+    public String registerPage(Model model) {
+        model.addAttribute("user", new RegisterRequestDTO());
+        return "auth/Register";
+    }
 
-    // @PostMapping("/register")
-    // public String registerUser(@ModelAttribute("user") @Valid RegisterRequestDTO
-    // dto,
-    // BindingResult result,
-    // Model model) {
-    // if (result.hasErrors()) {
-    // return "auth/register";
-    // }
-    // try {
-    // userService.registerUser(dto);
-    // return "redirect:/login?success";
-    // } catch (Exception e) {
-    // model.addAttribute("error", e.getMessage());
-    // return "auth/register";
-    // }
-    // }
+    @PostMapping("/register")
+    public String registerUser(@ModelAttribute("user") @Valid RegisterRequestDTO
+                                dto,
+                                BindingResult result,
+                                Model model) {
+        if (result.hasErrors()) {
+            return "auth/Register";
+        }
+        
+        if (!dto.getPassword().equals(dto.getConfirmPassword())) {
+            result.rejectValue("confirmPassword", "error.user", "Mật khẩu xác nhận không khớp!");
+            return "auth/Register";
+        }
+
+        // 3. Check lỗi Database (Email đã tồn tại)
+        if (userService.existsByEmail(dto.getEmail())) {
+            result.rejectValue("email", "error.user", "Email này đã được sử dụng!");
+            return "auth/Register";
+        }
+
+        userService.registerUser(dto);
+        return "redirect:/login?success";
+        }
 }

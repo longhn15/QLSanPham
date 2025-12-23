@@ -31,12 +31,14 @@ public class Product extends BaseEntity {
     private BigDecimal price; // Giá gốc
 
     @Column(name = "stock_quantity", nullable = false)
+    @Builder.Default
     private Integer stockQuantity = 0; // Kho chính (Main Stock)
 
     @Column(name = "image_url", length = 500)
     private String imageUrl;
 
     @Column(name = "is_active")
+    @Builder.Default
     private boolean isActive = true;
 
     // Quan hệ Lazy để tối ưu truy vấn
@@ -46,5 +48,6 @@ public class Product extends BaseEntity {
 
     // Optimistic Locking: Chống ghi đè khi nhiều admin cùng sửa kho
     @Version
+    @Builder.Default
     private Integer version = 0;
 }

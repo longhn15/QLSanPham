@@ -1,6 +1,7 @@
 package com.example.QLSanPham.repository;
 
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -35,4 +36,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     
     // Tìm sản phẩm active
     Page<Product> findByActiveTrue(Pageable pageable);
+    
+    // Phương thức hỗ trợ data seeding: Kiểm tra tồn tại sản phẩm theo tên
+    boolean existsByName(String name);
+    
+    // Lấy tất cả sản phẩm của 1 category (Không phân trang)
+    List<Product> findByCategoryId(Long categoryId);
 }

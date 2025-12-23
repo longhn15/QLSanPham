@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ - LongShop</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Hover effect */
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Loading animation */
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-b from-gray-50 to-white">
+    
+    <!-- Header Banner -->
+    <div class="relative h-96 overflow-hidden bg-gradient-to-r from-purple-600 via-pink-500 to-red-500">
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute top-10 left-10 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-3xl"></div>
+            <div class="absolute -bottom-8 right-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl"></div>
+        </div>
+        
+        <div class="relative h-full flex flex-col items-center justify-center text-center text-white px-4">
+            <h1 class="text-5xl md:text-6xl font-bold mb-4 drop-shadow-lg">
+                Chào mừng bạn <span class="animate-bounce">👋</span>
+            </h1>
+            <p class="text-xl md:text-2xl font-light drop-shadow-md mb-8">Khám phá bộ sưu tập sản phẩm tuyệt vời của chúng tôi</p>
+            
+            <!-- Search Bar -->
+            <div class="w-full max-w-2xl">
+                <div class="relative">
+                    <input type="text" placeholder="Tìm kiếm sản phẩm..." 
+                           class="w-full px-6 py-4 rounded-full text-gray-800 shadow-lg focus:outline-none focus:ring-4 focus:ring-yellow-300">
+                    <button class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full transition">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <!-- Categories Section -->
+        <section class="mb-16">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-900 flex items-center gap-3">
+                        <i class="fas fa-tag text-purple-600"></i>
+                        Danh Mục
+                    </h2>
+                    <p class="text-gray-600 mt-2">Chọn danh mục yêu thích của bạn</p>
+                </div>
+            </div>
+            
+            <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+                <!-- Loop categories -->
+                <div th:each="cat : ${categorys}" class="flex-shrink-0">
+                    <a href="#" 
+                       class="card-hover group flex flex-col items-center justify-center w-32 h-40 bg-white rounded-2xl shadow-md border-2 border-transparent hover:border-purple-500">
+                        <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-2xl group-hover:scale-110 transition">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <p class="mt-4 font-semibold text-gray-800 text-center text-sm group-hover:text-purple-600 transition" th:text="${cat.name}">
+                            Danh mục
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1">Xem ngay</p>
+                    </a>
+                </div>
+
+                <!-- More categories button -->
+                <a href="#" class="flex-shrink-0 card-hover flex flex-col items-center justify-center w-32 h-40 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl shadow-md text-white hover:shadow-xl">
+                    <i class="fas fa-arrow-right text-3xl"></i>
+                    <p class="mt-2 font-semibold text-sm">Xem tất cả</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section>
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-900 flex items-center gap-3">
+                        <i class="fas fa-star text-yellow-400"></i>
+                        Sản Phẩm Nổi Bật
+                    </h2>
+                    <p class="text-gray-600 mt-2">Những sản phẩm được yêu thích nhất</p>
+                </div>
+                <a href="#" class="text-purple-600 font-semibold hover:text-purple-700 flex items-center gap-2 transition">
+                    Xem tất cả <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
+                <!-- Loop products -->
+                <div th:each="product : ${products}" class="card-hover bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 hover:border-purple-300">
+                    
+                    <!-- Product Image -->
+                    <div class="relative h-48 overflow-hidden bg-gray-100 group">
+                        <img th:src="${product.imageUrl}" th:alt="${product.name}"
+                             class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        
+                        <!-- Badge -->
+                        <div class="absolute top-3 right-3 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                            <i class="fas fa-fire"></i> Hot
+                        </div>
+
+                        <!-- Quick View Button -->
+                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
+                            <button class="bg-white text-gray-900 p-3 rounded-full hover:bg-purple-600 hover:text-white transition transform hover:scale-110">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="bg-white text-gray-900 p-3 rounded-full hover:bg-red-500 hover:text-white transition transform hover:scale-110">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Product Info -->
+                    <div class="p-5">
+                        <!-- Category -->
+                        <p class="text-xs font-semibold text-purple-600 uppercase tracking-wider" 
+                           th:text="${product.category.name}">Danh mục</p>
+
+                        <!-- Product Name -->
+                        <a th:href="@{/product/{id}(id=${product.id})}"
+                           class="block mt-2">
+                            <h3 class="text-lg font-bold text-gray-900 hover:text-purple-600 transition line-clamp-2" 
+                                th:text="${product.name}">
+                                Tên sản phẩm
+                            </h3>
+                        </a>
+
+                        <!-- Rating (Placeholder) -->
+                        <div class="flex items-center gap-2 mt-3">
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="text-xs text-gray-500">(245 đánh giá)</span>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="flex items-center gap-3 mt-4">
+                            <span class="text-2xl font-bold text-red-600" 
+                                  th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                20.000.000 đ
+                            </span>
+                            <span class="text-sm line-through text-gray-400">25.000.000 đ</span>
+                        </div>
+
+                        <!-- Stock Info -->
+                        <p class="text-xs text-gray-600 mt-2">
+                            <span class="font-semibold" th:text="${product.stockQuantity}">100</span> sản phẩm còn lại
+                        </p>
+
+                        <!-- Add to Cart Button -->
+                        <button class="w-full mt-5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-4 rounded-xl transition transform hover:scale-105 flex items-center justify-center gap-2 shadow-md">
+                            <i class="fas fa-shopping-cart"></i>
+                            Thêm vào giỏ
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Load More Button -->
+            <div class="text-center">
+                <button class="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition transform hover:scale-105">
+                    <i class="fas fa-redo-alt mr-2"></i>
+                    Tải thêm sản phẩm
+                </button>
+            </div>
+        </section>
+
+        <!-- Promotional Banner -->
+        <section class="mt-16">
+            <div class="relative h-56 md:h-64 rounded-3xl overflow-hidden bg-gradient-to-r from-purple-600 via-pink-500 to-red-500">
+                <div class="absolute inset-0 opacity-20">
+                    <div class="absolute top-5 left-5 w-56 h-56 bg-white rounded-full mix-blend-multiply filter blur-3xl"></div>
+                </div>
+                
+                <div class="relative h-full flex flex-col md:flex-row items-center justify-between px-8 md:px-16 text-white">
+                    <div>
+                        <h3 class="text-3xl md:text-4xl font-bold mb-3">Flash Sale Mỗi Ngày</h3>
+                        <p class="text-lg opacity-90 mb-6">Giảm giá lên đến 50% trên những sản phẩm tuyệt vời</p>
+                        <button class="bg-white text-purple-600 font-semibold px-8 py-3 rounded-full hover:bg-gray-100 transition transform hover:scale-105">
+                            Khám phá ngay
+                        </button>
+                    </div>
+                    <div class="text-6xl opacity-30 hidden md:block">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h4 class="text-xl font-bold mb-4">LongShop</h4>
+                    <p class="text-gray-400">Cửa hàng trực tuyến hàng đầu với sản phẩm chất lượng và giá tốt nhất.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Về chúng tôi</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition">Giới thiệu</a></li>
+                        <li><a href="#" class="hover:text-white transition">Điều khoản dịch vụ</a></li>
+                        <li><a href="#" class="hover:text-white transition">Chính sách bảo mật</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Hỗ trợ</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition">Liên hệ</a></li>
+                        <li><a href="#" class="hover:text-white transition">FAQ</a></li>
+                        <li><a href="#" class="hover:text-white transition">Hướng dẫn mua hàng</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Theo dõi chúng tôi</h4>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 bg-gray-700 hover:bg-purple-600 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-700 hover:bg-purple-600 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-700 hover:bg-purple-600 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 LongShop. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Smooth scroll helper -->
+    <style>
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</body>
+
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- 1. HEADER (Cố định) -->
+    <header class="sticky top-0 z-50 bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2 cursor-pointer">
+                    <i class="fas fa-bolt text-3xl text-yellow-300"></i>
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tighter">TECH<span class="text-yellow-300">SALE</span></h1>
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="hidden md:flex flex-1 mx-10 relative">
+                    <input type="text" placeholder="Săn iPhone 15 giá 1K..." class="w-full py-2 px-4 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                    <button class="absolute right-0 top-0 h-full px-6 bg-yellow-400 rounded-r-lg text-red-700 font-bold hover:bg-yellow-300">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+
+                <!-- Icons -->
+                <div class="flex items-center space-x-6">
+                    <div class="relative cursor-pointer">
+                        <i class="fas fa-shopping-cart text-2xl"></i>
+                        <span class="absolute -top-2 -right-2 bg-yellow-400 text-red-600 text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">3</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer space-x-2">
+                        <img src="https://i.pravatar.cc/150?img=3" alt="Avatar" class="w-8 h-8 rounded-full border-2 border-white">
+                        <span class="font-medium hidden lg:block">Nguyễn Văn A</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+</body>
+</html>

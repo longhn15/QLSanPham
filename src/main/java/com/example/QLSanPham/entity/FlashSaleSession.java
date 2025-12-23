@@ -31,6 +31,7 @@ public class FlashSaleSession extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
+    @Builder.Default
     private FlashSaleStatus status = FlashSaleStatus.PENDING; // PENDING, ACTIVE, FINISHED
 
     @OneToMany(mappedBy = "flashSaleSession", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

@@ -27,11 +27,17 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/login",
+                    "/register",
                     "/login/captcha",
                     "/css/**",
-                    "/js/**"
+                    "/js/**",
+                    "/images/**"
                 )
                 .permitAll()
+                // Phân quyền: Chỉ ADMIN có thể vào /admin/**
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                // Phân quyền: USER có thể vào /user/**
+                .requestMatchers("/user/**").hasRole("USER")
                 .anyRequest().authenticated()
             )
             .authenticationProvider(new CustomAuthenticationProvider(userSV))

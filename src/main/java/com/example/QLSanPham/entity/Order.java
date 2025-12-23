@@ -33,6 +33,7 @@ public class Order extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
+    @Builder.Default
     private OrderStatus status = OrderStatus.PENDING; // PENDING, PAID, SHIPPING, COMPLETED, CANCELLED
 
     @Column(name = "payment_method", length = 50)

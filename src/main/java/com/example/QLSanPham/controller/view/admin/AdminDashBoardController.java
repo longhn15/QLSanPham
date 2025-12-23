@@ -1,4 +1,4 @@
-package com.example.QLSanPham.controller.view;
+package com.example.QLSanPham.controller.view.admin;
 
 
 // import com.example.QLSanPham.service.FlashSaleService;
@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')") // Bảo mật 2 lớp
-public class AdminController {
+public class AdminDashBoardController {
 
     // private final FlashSaleService flashSaleService;
     // private final OrderService orderService;
@@ -29,6 +29,13 @@ public class AdminController {
         // model.addAttribute("revenue", orderService.getTodayRevenue());
         // model.addAttribute("totalOrders", orderService.countTodayOrders());
         return "/admin/DashBoard"; // admin/dashboard.html
+    }
+
+    @GetMapping("/products")
+    public String manageProducts(Model model) {
+        // model.addAttribute("products", productService.getAllProducts());
+        // return "/user/HomePage";
+        return "/user/FakeHomePage";
     }
 
     // // 2. Quản lý Flash Sale

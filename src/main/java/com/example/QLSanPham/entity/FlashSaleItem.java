@@ -36,12 +36,15 @@ public class FlashSaleItem extends BaseEntity {
     private Integer originalStock; // Số lượng đem ra sale
 
     @Column(name = "sold_quantity")
+    @Builder.Default
     private Integer soldQuantity = 0; // Số lượng đã bán
 
+    @Builder.Default
     private boolean status = true;
 
     // CỰC KỲ QUAN TRỌNG: Optimistic Locking cho Flash Sale
     // Giúp ngăn chặn việc 1000 người mua nhưng chỉ có 10 hàng
     @Version
+    @Builder.Default
     private Integer version = 0;
 }

@@ -35,8 +35,10 @@ public class User extends BaseEntity {
     private String phoneNumber;
 
     @Column(length = 20)
+    @Builder.Default
     private String role = "USER"; // ADMIN hoặc USER
 
     @Column(name = "is_active")
+    @Builder.Default
     private boolean isActive = true;
 }
