@@ -20,6 +20,9 @@ public class SecurityConfig {
     @Autowired
     private CaptchaAuthenticationFilter captchaAuthenticationFilter;
 
+    @Autowired
+    private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -27,8 +30,11 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/login",
+                    "/user/home/**",
+                    "/user/product/**",
                     "/register",
                     "/login/captcha",
+                    "/api/cart/**",
                     "/css/**",
                     "/js/**",
                     "/images/**"
@@ -44,12 +50,15 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/login") // Trang login custom của bạn
                 // .defaultSuccessUrl("/", true) // Login xong về trang chủ
-                .successHandler(new CustomAuthenticationSuccessHandler())
+                .successHandler(customAuthenticationSuccessHandler)
                 .failureHandler(new CustomAuthenticationFailureHandler())
                 .permitAll()
             )
             .logout(logout -> logout
+                .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout=true")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
                 .permitAll()
             )
             // Xử lý khi User thường cố vào trang Admin

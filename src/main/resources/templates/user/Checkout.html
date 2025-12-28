@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+<div th:replace="~{user/Fragment/Header :: header}"></div>
+
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <h1 class="text-2xl font-bold mb-6">Thanh toan</h1>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Form -->
+        <section class="lg:col-span-2 bg-white border border-gray-200 rounded-xl p-6 space-y-4">
+            <h2 class="font-semibold text-lg">Thong tin nhan hang</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-sm text-gray-600">Ho ten</label>
+                    <input type="text" class="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 focus:outline-none" placeholder="Nhap ho ten">
+                </div>
+                <div>
+                    <label class="text-sm text-gray-600">So dien thoai</label>
+                    <input type="text" class="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 focus:outline-none" placeholder="0123 456 789">
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="text-sm text-gray-600">Dia chi</label>
+                    <input type="text" class="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 focus:outline-none" placeholder="So nha, duong, phuong xa">
+                </div>
+                <div>
+                    <label class="text-sm text-gray-600">Tinh/Thanh pho</label>
+                    <input type="text" class="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 focus:outline-none" placeholder="Ha Noi">
+                </div>
+                <div>
+                    <label class="text-sm text-gray-600">Quan/Huyen</label>
+                    <input type="text" class="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 focus:outline-none" placeholder="Cau Giay">
+                </div>
+            </div>
+
+            <div class="pt-2">
+                <h3 class="font-semibold text-lg mb-3">Phuong thuc thanh toan</h3>
+                <div class="space-y-2">
+                    <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:border-orange-400 cursor-pointer">
+                        <input type="radio" name="payment" value="cod" checked class="text-orange-500">
+                        <span>Thanh toan khi nhan hang (COD)</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:border-orange-400 cursor-pointer">
+                        <input type="radio" name="payment" value="bank" class="text-orange-500">
+                        <span>Chuyen khoan ngan hang</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <aside class="bg-white border border-gray-200 rounded-xl p-6 h-fit space-y-4">
+            <h2 class="font-semibold text-lg">Don hang</h2>
+            <div class="space-y-3 text-sm">
+                <div class="flex justify-between" th:each="item : ${cartItems}">
+                    <span th:text="${item.name}">Ten san pham</span>
+                    <span th:text="${#numbers.formatDecimal(item.price,0,'COMMA',0,'POINT')} + ' d x ' + ${item.quantity}">0 d</span>
+                </div>
+            </div>
+            <div class="border-t border-gray-200 pt-3 text-sm text-gray-600 flex justify-between">
+                <span>Tam tinh</span>
+                <span th:text="${#numbers.formatDecimal(subtotal,0,'COMMA',0,'POINT')} + ' d'">0 d</span>
+            </div>
+            <div class="text-sm text-gray-600 flex justify-between">
+                <span>Phi van chuyen</span>
+                <span th:text="${shippingFee} != null ? ${shippingFee} + ' d' : 'Tinh sau'">Tinh sau</span>
+            </div>
+            <div class="border-t border-gray-200 pt-3 flex justify-between text-lg font-bold">
+                <span>Thanh tien</span>
+                <span th:text="${#numbers.formatDecimal(total,0,'COMMA',0,'POINT')} + ' d'">0 d</span>
+            </div>
+            <button class="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg shadow">Dat hang</button>
+            <a href="/cart" class="block text-center text-sm text-gray-600 hover:text-orange-600">Quay lai gio hang</a>
+        </aside>
+    </div>
+</main>
+
+<div th:replace="~{user/Fragment/Footer :: footer}"></div>
+
+</body>
+</html>

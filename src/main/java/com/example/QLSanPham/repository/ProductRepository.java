@@ -28,14 +28,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     // Tìm kiếm sản phẩm theo tên (Có phân trang)
     @EntityGraph(attributePaths = {"category"})
-    Page<Product> findByNameContainingIgnoreCaseAndActiveTrue(String name, Pageable pageable);
+    Page<Product> findByNameContainingIgnoreCaseOrCategoryNameContainingIgnoreCase(String name, String categoryName, Pageable pageable);
 
     // Lọc theo Category
     @EntityGraph(attributePaths = {"category"})
     Page<Product> findByCategoryId(Long categoryId, Pageable pageable);
     
     // Tìm sản phẩm active
-    Page<Product> findByActiveTrue(Pageable pageable);
+    Page<Product> findByIsActiveTrue(Pageable pageable);
     
     // Phương thức hỗ trợ data seeding: Kiểm tra tồn tại sản phẩm theo tên
     boolean existsByName(String name);
