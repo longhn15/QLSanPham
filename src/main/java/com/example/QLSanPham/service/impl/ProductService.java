@@ -38,15 +38,8 @@ public class ProductService {
         return productOPT.orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm với id: " + id));
     }
 
-    public List<Product> findByCategoryId(Long categoryId, Pageable pageable) {
+    public List<Product> getProductByCategoryId(Long categoryId, Pageable pageable) {
         return productRepository.findByCategoryId(categoryId, pageable).getContent();
     }
 
-    // // Chỉ method ghi mới mở Transaction write
-    // @Transactional
-    // public ProductDTO createProduct(ProductDTO dto) {
-    //     Product entity = productMapper.toEntity(dto);
-    //     // Logic nghiệp vụ khác nếu có...
-    //     return productMapper.toDTO(productRepository.save(entity));
-    // }
 }

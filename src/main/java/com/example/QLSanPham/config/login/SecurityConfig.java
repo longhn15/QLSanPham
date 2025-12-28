@@ -29,12 +29,13 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) // Tắt tạm thời để test API dễ hơn (Bật lại sau nếu cần)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                    "/login",
                     "/user/home/**",
                     "/user/product/**",
+                    "/user/cart/**",
+                    "/api/cart/**",
+                    "/login",
                     "/register",
                     "/login/captcha",
-                    "/api/cart/**",
                     "/css/**",
                     "/js/**",
                     "/images/**"
@@ -47,6 +48,9 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .authenticationProvider(new CustomAuthenticationProvider(userSV))
+            .sessionManagement(session -> session
+                .sessionFixation().migrateSession() // Migrate session instead of creating new one
+            )
             .formLogin(form -> form
                 .loginPage("/login") // Trang login custom của bạn
                 // .defaultSuccessUrl("/", true) // Login xong về trang chủ

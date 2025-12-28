@@ -4,7 +4,8 @@ import com.example.QLSanPham.dto.response.CartResponse;
 import com.example.QLSanPham.security.UserDetailsServiceImpl;
 import com.example.QLSanPham.service.CartService;
 import jakarta.servlet.http.HttpSession;
-import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -14,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/user/cart")
-@RequiredArgsConstructor
 public class UserCartController {
 
-    private final CartService cartService;
+    @Autowired
+    private CartService cartService;
 
     @GetMapping
     public String viewCart(

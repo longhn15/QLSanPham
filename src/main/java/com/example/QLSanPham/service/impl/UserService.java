@@ -21,7 +21,6 @@ public class UserService {
 
 
     public void registerUser(RegisterRequestDTO dto) {
-        // 1. Map từ DTO (ít trường) sang Entity (nhiều trường)
         User user = User.builder()
                 .username(dto.getUsername())
                 .email(dto.getEmail())

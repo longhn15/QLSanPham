@@ -9,8 +9,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.QLSanPham.entity.User;
+import com.example.QLSanPham.security.UserDetailsServiceImpl;
 import com.example.QLSanPham.service.impl.UserService;
 
 
@@ -51,7 +53,11 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             ? Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
             : Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
 
-        return new UsernamePasswordAuthenticationToken(username, password, authorities);
+        // Use CustomUserDetails so we keep user ID in SecurityContext (needed for cart lookup)
+        UserDetails principal = new UserDetailsServiceImpl.CustomUserDetails(user);
+
+        // Do not store raw password in the authentication
+        return new UsernamePasswordAuthenticationToken(principal, null, authorities);
     }
 
     @Override

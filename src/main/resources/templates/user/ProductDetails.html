@@ -290,17 +290,24 @@
     // Update cart count in header
     async function updateCartCount() {
         try {
-            const res = await fetch('/api/cart/count');
+            const res = await fetch('/api/cart/count', { credentials: 'same-origin' });
             if (!res.ok) return;
             const data = await res.json();
             
             // Update cart badge in header if exists
-            const cartBadge = document.querySelector('[data-cart-count]');
-            if (cartBadge && data.success) {
-                cartBadge.textContent = data.count || 0;
-                if (data.count > 0) {
-                    cartBadge.classList.remove('hidden');
+            let cartBadge = document.querySelector('[data-cart-count]');
+            if (!cartBadge) {
+                const cartLink = document.querySelector('a[href="/user/cart"]');
+                if (cartLink) {
+                    cartBadge = document.createElement('span');
+                    cartBadge.dataset.cartCount = 'true';
+                    cartBadge.className = 'absolute -top-2 -right-2 bg-yellow-400 text-red-600 text-xs font-bold min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center';
+                    cartLink.appendChild(cartBadge);
                 }
+            }
+
+            if (cartBadge && data.success) {
+                cartBadge.textContent = data.count != null ? data.count : 0;
             }
         } catch (e) {
             console.error('Failed to update cart count:', e);
@@ -327,7 +334,24 @@
             
             if (data.success) {
                 showToast('✅ Đã thêm sản phẩm vào giỏ hàng!', 'success');
-                await updateCartCount();
+                if (data.cartItemCount !== undefined) {
+                    // Cập nhật badge ngay từ response để tránh lệ thuộc session fetch
+                    let cartBadge = document.querySelector('[data-cart-count]');
+                    if (!cartBadge) {
+                        const cartLink = document.querySelector('a[href="/user/cart"]');
+                        if (cartLink) {
+                            cartBadge = document.createElement('span');
+                            cartBadge.dataset.cartCount = 'true';
+                            cartBadge.className = 'absolute -top-2 -right-2 bg-yellow-400 text-red-600 text-xs font-bold min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center';
+                            cartLink.appendChild(cartBadge);
+                        }
+                    }
+                    if (cartBadge) {
+                        cartBadge.textContent = data.cartItemCount;
+                    }
+                } else {
+                    await updateCartCount();
+                }
                 
                 // Reset quantity to 1
                 document.getElementById('pd-qty').value = 1;

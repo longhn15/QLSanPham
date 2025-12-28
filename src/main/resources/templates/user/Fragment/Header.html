@@ -26,10 +26,9 @@
             <nav aria-label="Tac vu nguoi dung" class="flex items-center gap-5">
                 <a href="/user/cart" class="relative hover:opacity-90" aria-label="Gio hang">
                     <i class="fas fa-shopping-cart text-2xl"></i>
-                    <span th:if="${cartCount != null && cartCount > 0}" 
-                          data-cart-count="true"
-                          class="absolute -top-2 -right-2 bg-yellow-400 text-red-600 text-xs font-bold min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center" 
-                          th:text="${cartCount}">0</span>
+                    <span data-cart-count="true"
+                          class="absolute -top-2 -right-2 bg-yellow-400 text-red-600 text-xs font-bold min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center"
+                          th:text="${cartCount != null ? cartCount : 0}">0</span>
                 </a>
 
                 <!-- Logged in: User menu -->
@@ -111,3 +110,33 @@
         }
     </style>
 </header>
+
+<script>
+// Auto update cart badge on every page load (handles cases SSR gave 0 then client has items)
+document.addEventListener('DOMContentLoaded', async () => {
+    const badge = document.querySelector('[data-cart-count]');
+    const cartLink = document.querySelector('a[href="/user/cart"]');
+    if (!badge && !cartLink) return;
+
+    try {
+        const res = await fetch('/api/cart/count', { headers: { 'Accept': 'application/json' }, credentials: 'same-origin' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!data.success) return;
+
+        let target = badge;
+        if (!target && cartLink) {
+            target = document.createElement('span');
+            target.dataset.cartCount = 'true';
+            target.className = 'absolute -top-2 -right-2 bg-yellow-400 text-red-600 text-xs font-bold min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center';
+            cartLink.appendChild(target);
+        }
+        if (!target) return;
+
+        const count = data.count != null ? data.count : 0;
+        target.textContent = count;
+    } catch (e) {
+        console.warn('Cannot update cart badge', e);
+    }
+});
+</script>

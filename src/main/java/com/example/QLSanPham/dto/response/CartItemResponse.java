@@ -1,24 +1,24 @@
-// package com.example.QLSanPham.dto.response;
+package com.example.QLSanPham.dto.response;
 
-// import java.math.BigDecimal;
+import java.math.BigDecimal;
 
-// import lombok.AllArgsConstructor;
-// import lombok.Builder;
-// import lombok.Data;
-// import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-// @Data
-// @Builder
-// @NoArgsConstructor
-// @AllArgsConstructor
-// public class CartItemResponse {
-//     private Long id;
-//     private Long productId;
-//     private String productName;
-//     private String productImage;
-//     private String categoryName;
-//     private BigDecimal price;
-//     private Integer quantity;
-//     private BigDecimal totalPrice;
-//     private Integer stockQuantity;
-// }
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class CartItemResponse {
+    private Long id;
+    private Long productId;
+    private String productName;
+    private String productImage;
+    private String categoryName;
+    private BigDecimal price;
+    private Integer quantity;
+    private BigDecimal totalPrice;
+    private Integer stockQuantity;
+}

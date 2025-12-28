@@ -35,7 +35,7 @@
             Giỏ hàng của bạn
         </h1>
         <div class="text-sm text-gray-600">
-            <span th:if="${totalItems != null && totalItems > 0}" th:text="${totalItems} + ' sản phẩm'">0 sản phẩm</span>
+            <span id="total-items-label" th:if="${totalItems != null && totalItems > 0}" th:text="${totalItems} + ' sản phẩm'">0 sản phẩm</span>
         </div>
     </div>
 
@@ -43,8 +43,9 @@
         <!-- Cart Items Section -->
         <section class="lg:col-span-2 space-y-4">
             <!-- Empty Cart -->
-            <div th:if="${cartItems == null || #lists.isEmpty(cartItems)}" 
-                 class="bg-white border-2 border-dashed border-gray-300 rounded-2xl p-12 text-center">
+              <div th:if="${cartItems == null || #lists.isEmpty(cartItems)}" 
+                  id="empty-state"
+                  class="bg-white border-2 border-dashed border-gray-300 rounded-2xl p-12 text-center">
                 <div class="w-32 h-32 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
                     <i class="fas fa-shopping-cart text-5xl text-gray-400"></i>
                 </div>
@@ -56,11 +57,13 @@
             </div>
 
             <!-- Cart Items -->
-            <div th:if="${cartItems != null && !#lists.isEmpty(cartItems)}" class="space-y-3">
+            <div th:if="${cartItems != null && !#lists.isEmpty(cartItems)}" class="space-y-3" id="items-container">
                 <article th:each="item, iterStat : ${cartItems}" 
                          th:data-item-id="${item.id}"
                          th:data-product-id="${item.productId}"
                          th:data-stock="${item.stockQuantity}"
+                         th:data-price="${item.price}"
+                         th:data-quantity="${item.quantity}"
                          class="cart-item bg-white border border-gray-200 hover:border-orange-300 rounded-xl p-5 transition-all duration-200 shadow-sm hover:shadow-md">
                     
                     <div class="flex flex-col sm:flex-row gap-4 items-start">
@@ -104,7 +107,7 @@
                                 <div class="flex items-baseline gap-2">
                                     <span class="text-2xl font-bold text-red-600" 
                                           th:text="${#numbers.formatDecimal(item.price,0,'COMMA',0,'POINT')} + ' ₫'">0 ₫</span>
-                                    <span class="text-sm text-gray-500">× <span th:text="${item.quantity}">1</span></span>
+                                    <span class="text-sm text-gray-500">× <span class="item-qty" th:text="${item.quantity}">1</span></span>
                                 </div>
 
                                 <div class="flex items-center gap-3">
@@ -116,14 +119,14 @@
                                                 aria-label="Giảm số lượng">
                                             <i class="fas fa-minus"></i>
                                         </button>
-                                        <input type="number" 
-                                               th:value="${item.quantity}"
-                                               th:id="'qty-' + ${item.id}"
-                                               class="w-16 text-center font-bold text-gray-900 focus:outline-none border-x-2 border-gray-300"
-                                               min="1"
-                                               th:max="${item.stockQuantity}"
-                                               th:onchange="'updateQuantity(' + ${item.id} + ', this.value)'"
-                                               aria-label="Số lượng">
+                                             <input type="number" 
+                                                 th:value="${item.quantity}"
+                                                 th:id="'qty-' + ${item.id}"
+                                                 class="w-16 text-center font-bold text-gray-900 focus:outline-none border-x-2 border-gray-300"
+                                                 min="1"
+                                                 th:max="${item.stockQuantity}"
+                                                 th:onchange="'updateQuantity(' + ${item.id} + ', this.value)'"
+                                                 aria-label="Số lượng">
                                         <button class="px-4 py-2 hover:bg-orange-50 text-gray-600 font-bold transition disabled:opacity-50 disabled:cursor-not-allowed"
                                                 th:onclick="'updateQuantity(' + ${item.id} + ', ' + ${item.quantity} + ' + 1)'"
                                                 th:disabled="${item.quantity >= item.stockQuantity}"
@@ -145,8 +148,8 @@
                             <div class="border-t border-gray-200 pt-2 mt-2">
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm text-gray-600 font-medium">Tạm tính:</span>
-                                    <span class="text-xl font-bold text-orange-600" 
-                                          th:text="${#numbers.formatDecimal(item.totalPrice,0,'COMMA',0,'POINT')} + ' ₫'">0 ₫</span>
+                                    <span class="text-xl font-bold text-orange-600 item-total" 
+                                        th:text="${#numbers.formatDecimal(item.totalPrice,0,'COMMA',0,'POINT')} + ' ₫'">0 ₫</span>
                                 </div>
                             </div>
                         </div>
@@ -165,8 +168,9 @@
         </section>
 
         <!-- Order Summary Sidebar -->
-        <aside th:if="${cartItems != null && !#lists.isEmpty(cartItems)}" 
-               class="lg:sticky lg:top-24 h-fit">
+         <aside th:if="${cartItems != null && !#lists.isEmpty(cartItems)}" 
+             id="summary-card"
+             class="lg:sticky lg:top-24 h-fit">
             <div class="bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden">
                 <!-- Header -->
                 <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-5">
@@ -184,7 +188,7 @@
                             <i class="fas fa-calculator text-gray-400"></i>
                             Tạm tính
                         </span>
-                        <span class="font-semibold" th:text="${#numbers.formatDecimal(subtotal,0,'COMMA',0,'POINT')} + ' ₫'">0 ₫</span>
+                        <span id="summary-subtotal" class="font-semibold" th:text="${#numbers.formatDecimal(subtotal,0,'COMMA',0,'POINT')} + ' ₫'">0 ₫</span>
                     </div>
 
                     <!-- Shipping -->
@@ -193,24 +197,24 @@
                             <i class="fas fa-shipping-fast text-gray-400"></i>
                             Phí vận chuyển
                         </span>
-                        <span class="font-semibold text-green-600" 
-                              th:if="${shippingFee != null && shippingFee == 0}">
+                        <span id="shipping-free" class="font-semibold text-green-600" 
+                            th:classappend="${shippingFee != null && shippingFee == 0} ? '' : ' hidden'">
                             Miễn phí
                         </span>
-                        <span class="font-semibold" 
-                              th:if="${shippingFee != null && shippingFee > 0}"
-                              th:text="${#numbers.formatDecimal(shippingFee,0,'COMMA',0,'POINT')} + ' ₫'">0 ₫</span>
+                        <span id="shipping-value" class="font-semibold" 
+                            th:classappend="${shippingFee != null && shippingFee > 0} ? '' : ' hidden'"
+                            th:text="${#numbers.formatDecimal(shippingFee,0,'COMMA',0,'POINT')} + ' ₫'">0 ₫</span>
                     </div>
 
                     <!-- Free Shipping Progress -->
-                    <div th:if="${shippingFee != null && shippingFee > 0}" 
+                    <div id="free-ship-block" th:if="${shippingFee != null && shippingFee > 0}" 
                          class="bg-orange-50 border border-orange-200 rounded-lg p-3">
                         <p class="text-xs text-orange-700 mb-2">
                             <i class="fas fa-gift mr-1"></i>
-                            Thêm <span class="font-bold" th:text="${#numbers.formatDecimal(500000 - subtotal,0,'COMMA',0,'POINT')} + ' ₫'">0 ₫</span> để được miễn phí ship!
+                            Thêm <span id="free-ship-text" class="font-bold" th:text="${#numbers.formatDecimal(500000 - subtotal,0,'COMMA',0,'POINT')} + ' ₫'">0 ₫</span> để được miễn phí ship!
                         </p>
                         <div class="w-full bg-orange-200 rounded-full h-2">
-                            <div class="bg-gradient-to-r from-orange-500 to-orange-600 h-2 rounded-full transition-all duration-500"
+                            <div id="progress-bar" class="bg-gradient-to-r from-orange-500 to-orange-600 h-2 rounded-full transition-all duration-500"
                                  th:style="'width: ' + ${subtotal / 500000 * 100} + '%'"></div>
                         </div>
                     </div>
@@ -221,7 +225,7 @@
                     <!-- Total -->
                     <div class="flex justify-between items-center py-3 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl px-4">
                         <span class="font-bold text-lg text-gray-800">Tổng cộng:</span>
-                        <span class="font-bold text-3xl text-red-600" 
+                        <span id="summary-total" class="font-bold text-3xl text-red-600" 
                               th:text="${#numbers.formatDecimal(total,0,'COMMA',0,'POINT')} + ' ₫'">0 ₫</span>
                     </div>
 
@@ -276,18 +280,126 @@
 </div>
 
 <script>
-// Update quantity
-function updateQuantity(cartItemId, newQuantity) {
-    newQuantity = parseInt(newQuantity);
-    
-    if (newQuantity < 1) {
+const CURRENCY_FORMATTER = new Intl.NumberFormat('vi-VN');
+
+function formatCurrency(value) {
+    return `${CURRENCY_FORMATTER.format(value || 0)} ₫`;
+}
+
+function updateCartBadge(count) {
+    let badge = document.querySelector('[data-cart-count]');
+    const safeCount = count || 0;
+
+    if (!badge && safeCount > 0) {
+        const cartLink = document.querySelector('a[href="/user/cart"]');
+        if (cartLink) {
+            badge = document.createElement('span');
+            badge.dataset.cartCount = 'true';
+            badge.className = 'absolute -top-2 -right-2 bg-yellow-400 text-red-600 text-xs font-bold min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center';
+            cartLink.appendChild(badge);
+        }
+    }
+
+    if (!badge) return;
+    badge.textContent = safeCount;
+}
+
+function showEmptyState() {
+    let empty = document.getElementById('empty-state');
+    const itemsContainer = document.getElementById('items-container');
+    const summaryCard = document.getElementById('summary-card');
+
+    if (!empty) {
+        const holder = document.querySelector('section.lg\:col-span-2');
+        if (holder) {
+            empty = document.createElement('div');
+            empty.id = 'empty-state';
+            empty.className = 'bg-white border-2 border-dashed border-gray-300 rounded-2xl p-12 text-center';
+            empty.innerHTML = `
+                <div class="w-32 h-32 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-shopping-cart text-5xl text-gray-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">Giỏ hàng trống</h3>
+                <p class="text-gray-500 mb-6">Hãy thêm sản phẩm yêu thích vào giỏ hàng của bạn!</p>
+                <a href="/user/home" class="inline-block bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold px-8 py-3 rounded-lg shadow-lg transition transform hover:scale-105">
+                    <i class="fas fa-shopping-bag mr-2"></i>Khám phá sản phẩm
+                </a>
+            `;
+            holder.prepend(empty);
+        }
+    }
+
+    if (empty) empty.classList.remove('hidden');
+    if (itemsContainer) itemsContainer.classList.add('hidden');
+    if (summaryCard) summaryCard.classList.add('hidden');
+}
+
+function recalcSummary() {
+    const items = Array.from(document.querySelectorAll('[data-item-id]'));
+    let subtotal = 0;
+    items.forEach(item => {
+        const price = parseFloat(item.dataset.price || '0');
+        const qty = parseInt(item.dataset.quantity || '0', 10);
+        subtotal += price * qty;
+    });
+
+    const shippingFee = subtotal >= 500000 || subtotal === 0 ? 0 : 30000;
+    const total = subtotal + shippingFee;
+    const itemCount = items.length;
+
+    const subtotalEl = document.getElementById('summary-subtotal');
+    const shippingValueEl = document.getElementById('shipping-value');
+    const shippingFreeEl = document.getElementById('shipping-free');
+    const freeShipBlock = document.getElementById('free-ship-block');
+    const freeShipText = document.getElementById('free-ship-text');
+    const progressBar = document.getElementById('progress-bar');
+    const totalEl = document.getElementById('summary-total');
+    const totalItemsLabel = document.getElementById('total-items-label');
+
+    if (subtotalEl) subtotalEl.textContent = formatCurrency(subtotal);
+    if (totalEl) totalEl.textContent = formatCurrency(total);
+    if (totalItemsLabel) {
+        if (itemCount > 0) {
+            totalItemsLabel.textContent = `${itemCount} sản phẩm`;
+            totalItemsLabel.classList.remove('hidden');
+        } else {
+            totalItemsLabel.classList.add('hidden');
+        }
+    }
+
+    if (shippingFee === 0) {
+        if (shippingFreeEl) shippingFreeEl.classList.remove('hidden');
+        if (shippingValueEl) shippingValueEl.classList.add('hidden');
+        if (freeShipBlock) freeShipBlock.classList.add('hidden');
+    } else {
+        if (shippingFreeEl) shippingFreeEl.classList.add('hidden');
+        if (shippingValueEl) {
+            shippingValueEl.textContent = formatCurrency(shippingFee);
+            shippingValueEl.classList.remove('hidden');
+        }
+        if (freeShipBlock) freeShipBlock.classList.remove('hidden');
+        if (freeShipText) freeShipText.textContent = formatCurrency(500000 - subtotal);
+        if (progressBar) progressBar.style.width = `${Math.min((subtotal / 500000) * 100, 100)}%`;
+    }
+
+    if (itemCount === 0) {
+        showEmptyState();
+    }
+
+    updateCartBadge(itemCount);
+}
+
+async function updateQuantity(cartItemId, newQuantity) {
+    newQuantity = parseInt(newQuantity, 10);
+    const itemElement = document.querySelector(`[data-item-id="${cartItemId}"]`);
+    if (!itemElement) return;
+
+    if (Number.isNaN(newQuantity) || newQuantity < 1) {
         showToast('Số lượng không hợp lệ', 'error');
         return;
     }
 
-    const itemElement = document.querySelector(`[data-item-id="${cartItemId}"]`);
-    const stock = parseInt(itemElement.dataset.stock);
-
+    const stock = parseInt(itemElement.dataset.stock || '0', 10);
     if (newQuantity > stock) {
         showToast('Số lượng vượt quá tồn kho', 'error');
         return;
@@ -295,78 +407,84 @@ function updateQuantity(cartItemId, newQuantity) {
 
     itemElement.classList.add('loading');
 
-    fetch('/api/cart/update', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cartItemId, quantity: newQuantity })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
+    try {
+        const res = await fetch('/api/cart/update', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ cartItemId, quantity: newQuantity })
+        });
+
+        const data = await res.json();
+
+        if (data.success && data.data) {
+            itemElement.dataset.quantity = data.data.quantity;
+
+            const qtyInput = document.getElementById(`qty-${cartItemId}`);
+            if (qtyInput) qtyInput.value = data.data.quantity;
+
+            const qtyLabel = itemElement.querySelector('.item-qty');
+            if (qtyLabel) qtyLabel.textContent = data.data.quantity;
+
+            const totalEl = itemElement.querySelector('.item-total');
+            if (totalEl) totalEl.textContent = formatCurrency(data.data.totalPrice);
+
             showToast('Đã cập nhật giỏ hàng');
-            location.reload();
+            recalcSummary();
         } else {
             showToast(data.message || 'Có lỗi xảy ra', 'error');
         }
-    })
-    .catch(err => {
+    } catch (err) {
         console.error(err);
         showToast('Không thể cập nhật giỏ hàng', 'error');
-    })
-    .finally(() => {
+    } finally {
         itemElement.classList.remove('loading');
-    });
+    }
 }
 
-// Remove item
-function removeItem(cartItemId) {
+async function removeItem(cartItemId) {
     if (!confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
 
     const itemElement = document.querySelector(`[data-item-id="${cartItemId}"]`);
+    if (!itemElement) return;
     itemElement.classList.add('loading');
 
-    fetch(`/api/cart/remove/${cartItemId}`, {
-        method: 'DELETE'
-    })
-    .then(res => res.json())
-    .then(data => {
+    try {
+        const res = await fetch(`/api/cart/remove/${cartItemId}`, { method: 'DELETE', headers: { 'Accept': 'application/json' } });
+        const data = await res.json();
+
         if (data.success) {
+            itemElement.remove();
             showToast('Đã xóa sản phẩm khỏi giỏ hàng');
-            location.reload();
+            recalcSummary();
         } else {
             showToast(data.message || 'Có lỗi xảy ra', 'error');
         }
-    })
-    .catch(err => {
+    } catch (err) {
         console.error(err);
         showToast('Không thể xóa sản phẩm', 'error');
-        itemElement.classList.remove('loading');
-    });
+    }
 }
 
-// Clear cart
-function clearCart() {
+async function clearCart() {
     if (!confirm('Bạn có chắc muốn xóa toàn bộ giỏ hàng?')) return;
 
-    fetch('/api/cart/clear', {
-        method: 'DELETE'
-    })
-    .then(res => res.json())
-    .then(data => {
+    try {
+        const res = await fetch('/api/cart/clear', { method: 'DELETE', headers: { 'Accept': 'application/json' } });
+        const data = await res.json();
+
         if (data.success) {
+            document.querySelectorAll('[data-item-id]').forEach(el => el.remove());
             showToast('Đã xóa toàn bộ giỏ hàng');
-            location.reload();
+            recalcSummary();
         } else {
             showToast(data.message || 'Có lỗi xảy ra', 'error');
         }
-    })
-    .catch(err => {
+    } catch (err) {
         console.error(err);
         showToast('Không thể xóa giỏ hàng', 'error');
-    });
+    }
 }
 
-// Toast notification
 function showToast(message, type = 'success') {
     const toast = document.getElementById('toast');
     const toastMessage = document.getElementById('toast-message');
@@ -397,6 +515,9 @@ function hideToast() {
     const toast = document.getElementById('toast');
     toast.style.transform = 'translateX(100%)';
 }
+
+// Recalculate summary on initial load (ensures badge & totals correct if SSR missed)
+recalcSummary();
 </script>
 
 </body>

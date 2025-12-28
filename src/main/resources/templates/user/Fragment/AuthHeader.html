@@ -1,0 +1,41 @@
+<!-- AUTH HEADER (simple header for login/register pages) -->
+<header th:fragment="authHeader" xmlns:th="http://www.thymeleaf.org" class="bg-white border-b border-gray-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex items-center justify-between">
+            <!-- Logo -->
+            <a href="/user/home" class="flex items-center gap-3 group" aria-label="Trang chủ">
+                <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+                    <i class="fas fa-bolt text-2xl text-yellow-300"></i>
+                </div>
+                <div class="hidden sm:block">
+                    <h1 class="text-2xl font-bold">
+                        <span class="text-gray-900">TECH</span><span class="text-orange-600">SALE</span>
+                    </h1>
+                    <p class="text-xs text-gray-500 -mt-1">Mua sắm thông minh</p>
+                </div>
+            </a>
+
+            <!-- Right side - Back to home link -->
+            <div class="flex items-center gap-4">
+                <a href="/user/home" class="hidden md:flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-orange-600 font-medium transition-colors">
+                    <i class="fas fa-home"></i>
+                    <span>Về trang chủ</span>
+                </a>
+                
+                <!-- Mobile home button -->
+                <a href="/user/home" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 hover:border-orange-400 text-gray-600 hover:text-orange-600 transition-colors">
+                    <i class="fas fa-home"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Make auth header sticky at top of page */
+        header[th\:fragment="authHeader"] {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+    </style>
+</header>

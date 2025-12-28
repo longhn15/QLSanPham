@@ -7,7 +7,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.example.QLSanPham.entity.User;
 import com.example.QLSanPham.repository.UserRepository;
 import com.example.QLSanPham.service.CartService;
 
@@ -29,18 +28,34 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             Authentication authentication) throws IOException, ServletException {
 
         HttpSession session = request.getSession();
+        
+        // Lưu sessionId CŨ trước khi Spring Security có thể thay đổi nó
+        final String oldSessionId = (String) session.getAttribute("CART_SESSION_ID");
+        final String actualSessionId = (oldSessionId != null) ? oldSessionId : session.getId();
+        
         session.removeAttribute("loginFailCount");
         session.removeAttribute("captcha");
+        session.removeAttribute("CART_SESSION_ID"); // Clear temp storage
 
         // Merge cart từ session sang user khi đăng nhập
         String username = authentication.getName();
-        String sessionId = session.getId();
         
         userRepository.findByUsername(username).ifPresent(user -> {
             try {
-                cartService.mergeSessionCartToUser(sessionId, user.getId());
+                System.out.println("=== CART MERGE DEBUG ===");
+                System.out.println("Username: " + username);
+                System.out.println("User ID: " + user.getId());
+                System.out.println("Old Session ID: " + actualSessionId);
+                System.out.println("Current Session ID: " + session.getId());
+                
+                cartService.mergeSessionCartToUser(actualSessionId, user.getId());
+                Integer count = cartService.getCartItemCount(user.getId(), session.getId());
+                session.setAttribute("CART_COUNT", count);
+
+                System.out.println("Cart merge completed successfully, new count: " + count);
             } catch (Exception e) {
                 // Log error but don't break login flow
+                System.err.println("Error merging cart: " + e.getMessage());
                 e.printStackTrace();
             }
         });

@@ -44,7 +44,7 @@ public class UserHomePageController {
 
     @GetMapping("/category/{id}")
     public String categoryProducts(@PathVariable Long id, Model model) {
-        model.addAttribute("products", productService.findByCategoryId(id, PageRequest.of(0, 12)));
+        model.addAttribute("products", productService.getProductByCategoryId(id, PageRequest.of(0, 12)));
         return "user/HomePage"; // user/HomePage.html
     }
 
@@ -55,7 +55,7 @@ public class UserHomePageController {
         model.addAttribute("product", product);
         
         // Lấy sản phẩm liên quan (cùng danh mục, loại trừ sản phẩm hiện tại, lấy 4-5 sản phẩm)
-        List<Product> relatedProducts = productService.findByCategoryId(product.getCategory().getId(), PageRequest.of(0, 5))
+        List<Product> relatedProducts = productService.getProductByCategoryId(product.getCategory().getId(), PageRequest.of(0, 5))
             .stream()
             .filter(p -> !p.getId().equals(id))
             .limit(4)

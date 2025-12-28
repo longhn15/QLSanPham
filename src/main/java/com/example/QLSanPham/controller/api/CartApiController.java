@@ -38,12 +38,14 @@ public class CartApiController {
             String sessionId = session.getId();
 
             CartItemResponse response = cartService.addToCart(request, userId, sessionId);
-            
+            Integer count = cartService.getCartItemCount(userId, sessionId);
+            session.setAttribute("CART_COUNT", count);
+
             Map<String, Object> result = new HashMap<>();
             result.put("success", true);
             result.put("message", "Đã thêm sản phẩm vào giỏ hàng");
             result.put("data", response);
-            result.put("cartItemCount", cartService.getCartItemCount(userId, sessionId));
+            result.put("cartItemCount", count);
             
             return ResponseEntity.ok(result);
         } catch (Exception e) {
@@ -67,6 +69,7 @@ public class CartApiController {
             String sessionId = session.getId();
 
             CartResponse response = cartService.getCart(userId, sessionId);
+            session.setAttribute("CART_COUNT", response.getTotalItems());
             
             return ResponseEntity.ok(Map.of(
                 "success", true,
@@ -94,11 +97,14 @@ public class CartApiController {
             String sessionId = session.getId();
 
             CartItemResponse response = cartService.updateCartItem(request, userId, sessionId);
+            Integer count = cartService.getCartItemCount(userId, sessionId);
+            session.setAttribute("CART_COUNT", count);
             
             Map<String, Object> result = new HashMap<>();
             result.put("success", true);
             result.put("message", "Đã cập nhật giỏ hàng");
             result.put("data", response);
+            result.put("cartItemCount", count);
             
             return ResponseEntity.ok(result);
         } catch (Exception e) {
@@ -123,11 +129,13 @@ public class CartApiController {
             String sessionId = session.getId();
 
             cartService.removeCartItem(cartItemId, userId, sessionId);
+            Integer count = cartService.getCartItemCount(userId, sessionId);
+            session.setAttribute("CART_COUNT", count);
             
             Map<String, Object> result = new HashMap<>();
             result.put("success", true);
             result.put("message", "Đã xóa sản phẩm khỏi giỏ hàng");
-            result.put("cartItemCount", cartService.getCartItemCount(userId, sessionId));
+            result.put("cartItemCount", count);
             
             return ResponseEntity.ok(result);
         } catch (Exception e) {
@@ -151,6 +159,7 @@ public class CartApiController {
             String sessionId = session.getId();
 
             cartService.clearCart(userId, sessionId);
+            session.setAttribute("CART_COUNT", 0);
             
             return ResponseEntity.ok(Map.of(
                 "success", true,
@@ -177,6 +186,7 @@ public class CartApiController {
             String sessionId = session.getId();
 
             Integer count = cartService.getCartItemCount(userId, sessionId);
+            session.setAttribute("CART_COUNT", count);
             
             return ResponseEntity.ok(Map.of(
                 "success", true,
@@ -191,9 +201,21 @@ public class CartApiController {
     }
 
     private Long getUserId(UserDetails userDetails) {
-        if (userDetails instanceof UserDetailsServiceImpl.CustomUserDetails) {
-            return ((UserDetailsServiceImpl.CustomUserDetails) userDetails).getId();
+        if (userDetails == null) {
+            System.out.println("UserDetails is null - anonymous user");
+            return null;
         }
+        
+        System.out.println("UserDetails type: " + userDetails.getClass().getName());
+        System.out.println("UserDetails username: " + userDetails.getUsername());
+        
+        if (userDetails instanceof UserDetailsServiceImpl.CustomUserDetails) {
+            Long userId = ((UserDetailsServiceImpl.CustomUserDetails) userDetails).getId();
+            System.out.println("Extracted user ID: " + userId);
+            return userId;
+        }
+        
+        System.out.println("UserDetails is not CustomUserDetails - returning null");
         return null;
     }
 }

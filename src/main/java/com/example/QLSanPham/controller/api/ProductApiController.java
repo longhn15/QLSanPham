@@ -27,7 +27,7 @@ public class ProductApiController {
         // Trả về danh sách sản phẩm phân trang, có thể lọc theo categoryId nếu được cung cấp
         PageRequest pageable = PageRequest.of(page, 12); // 12 sản phẩm mỗi trang
         List<Product> products = (categoryId != null)
-                ? productService.findByCategoryId(categoryId, pageable)
+                ? productService.getProductByCategoryId(categoryId, pageable)
                 : productService.getAllProducts(pageable).getContent();
         return ResponseEntity.ok(products);
     }

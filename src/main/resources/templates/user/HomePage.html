@@ -414,10 +414,19 @@
 
     // Cập nhật số lượng giỏ hàng
     async function updateCartCount() {
-        const badge = document.getElementById('cart-count');
+        let badge = document.querySelector('[data-cart-count]');
+        if (!badge) {
+            const cartLink = document.querySelector('a[href="/user/cart"]');
+            if (cartLink) {
+                badge = document.createElement('span');
+                badge.dataset.cartCount = 'true';
+                badge.className = 'absolute -top-2 -right-2 bg-yellow-400 text-red-600 text-xs font-bold min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center';
+                cartLink.appendChild(badge);
+            }
+        }
         if (!badge) return;
         try {
-            const res = await fetch('/api/cart/count');
+            const res = await fetch('/api/cart/count', { credentials: 'same-origin' });
             if (!res.ok) return;
             const data = await res.json();
             badge.textContent = data.count ?? 0;
@@ -430,15 +439,35 @@
             const res = await fetch('/api/cart/add', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
                 body: JSON.stringify({ productId, quantity: 1 })
             });
             if (!res.ok) throw new Error('fail');
+            const data = await res.json();
             showToast('Thêm vào giỏ hàng thành công');
-            updateCartCount();
+            // Cập nhật badge từ response nếu có
+            if (data.cartItemCount !== undefined) {
+                let badge = document.querySelector('[data-cart-count]');
+                if (!badge) {
+                    const cartLink = document.querySelector('a[href="/user/cart"]');
+                    if (cartLink) {
+                        badge = document.createElement('span');
+                        badge.dataset.cartCount = 'true';
+                        badge.className = 'absolute -top-2 -right-2 bg-yellow-400 text-red-600 text-xs font-bold min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center';
+                        cartLink.appendChild(badge);
+                    }
+                }
+                if (badge) badge.textContent = data.cartItemCount;
+            } else {
+                updateCartCount();
+            }
         } catch (e) {
             showToast('Không thể thêm vào giỏ hàng', 'error');
         }
     }
+
+    // Init: Load cart count on page load
+    updateCartCount();
 
     // Xử lý sự kiện khi click nút "Thêm vào giỏ"
     function bindAddToCartButtons(scope = document) {
