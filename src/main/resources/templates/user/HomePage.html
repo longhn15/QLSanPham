@@ -33,7 +33,7 @@
         </div>
     </div>
 
-    <!-- Hero banner -->
+    <!-- Hero banner Carousel -->
     <section th:unless="${isSearchMode}" class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-gray-900 text-white shadow-xl">
         <div class="absolute inset-0 opacity-30">
             <div class="absolute -left-10 top-10 w-56 h-56 bg-orange-500 rounded-full blur-3xl"></div>
@@ -49,14 +49,29 @@
                     <a href="/user/orders" class="border border-white/30 px-5 py-3 rounded-lg hover:bg-white/10 transition">Theo dõi đơn mua</a>
                 </div>
             </div>
-            <div class="flex-1 w-full">
+            <!-- Carousel container -->
+            <div class="flex-1 w-full relative">
                 <div class="bg-white/10 backdrop-blur rounded-xl p-6 shadow-lg">
                     <div class="flex items-center justify-between mb-4">
-                        <span class="text-sm text-gray-200">Banner khuyến mãi</span>
-                        <span class="text-xs bg-white/20 px-3 py-1 rounded-full">Slide 1/3</span>
+                        <span class="text-sm text-gray-200">Sản phẩm khuyến mãi</span>
+                        <span class="text-xs bg-white/20 px-3 py-1 rounded-full"><span id="carousel-current">1</span>/<span id="carousel-total" th:text="${#lists.size(bannerProducts)}">5</span></span>
                     </div>
-                    <div class="aspect-[16/9] bg-white/5 rounded-lg border border-white/10 flex items-center justify-center text-gray-200">
-                        Banner/Slider placeholder
+                    <!-- Carousel slides -->
+                    <div class="relative">
+                        <div id="carousel-container" class="aspect-[16/9] bg-white/5 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden">
+                            <img id="carousel-image" src="" alt="Product" class="w-full h-full object-contain p-4">
+                        </div>
+                        <!-- Navigation buttons -->
+                        <button type="button" id="carousel-prev" class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 rounded-full p-2 transition z-20">
+                            <i class="fas fa-chevron-left text-white"></i>
+                        </button>
+                        <button type="button" id="carousel-next" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 rounded-full p-2 transition z-20">
+                            <i class="fas fa-chevron-right text-white"></i>
+                        </button>
+                    </div>
+                    <!-- Dot indicators -->
+                    <div class="flex justify-center gap-2 mt-4" id="carousel-dots">
+                        <!-- Dots sẽ được tạo bởi JavaScript -->
                     </div>
                 </div>
             </div>
@@ -124,7 +139,7 @@
         </div>
     </section>
 
-    <!-- Categories - ẩn khi tìm kiếm -->
+    <!-- Categories: danh sách loại - ẩn khi tìm kiếm -->
     <section th:unless="${isSearchMode}" class="mt-10" id="categories">
         <div class="flex items-center justify-between mb-6">
             <div>
@@ -260,9 +275,10 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="product-grid" data-empty="Chưa có sản phẩm phù hợp.">
+                <!-- Grid tìm kiếm -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6" id="product-grid" data-empty="Chưa có sản phẩm phù hợp.">
                     <article th:each="product : ${products}" class="product-card bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:-translate-y-1 transition" th:data-id="${product.id}" th:data-name="${product.name}" th:data-price="${product.price}" th:data-image="${product.imageUrl}" th:data-category="${product.category.name}">
-                        <div class="relative h-72 bg-gray-50 overflow-hidden">
+                        <div class="relative h-84 bg-gray-50 overflow-hidden">
                             <a th:href="@{/user/product/{id}(id=${product.id})}" class="block w-full h-full">
                                 <img th:src="${product.imageUrl}" th:alt="${product.name}" class="w-full h-full object-cover">
                             </a>
@@ -380,7 +396,12 @@
 <div th:replace="~{user/Fragment/Footer :: footer}"></div>
 
 <!-- Toast container -->
-<div id="toast" class="fixed top-4 right-4 z-50 hidden"></div>
+<div id="toast" class="hidden fixed top-20 right-4 z-50 max-w-md"></div>
+
+<!-- Hidden carousel data -->
+    <div id="carousel-data-holder" style="display:none;">
+        <div th:each="product : ${bannerProducts}" class="carousel-item" th:data-id="${product.id}" th:data-image="${product.imageUrl}"></div>
+    </div>
 
 <script>
 
@@ -405,11 +426,21 @@
 
 
     // Hiển thị thông báo toast
-    const toastEl = document.getElementById('toast');
+    let toastEl = document.getElementById('toast');
+    function ensureToast() {
+        if (toastEl) return toastEl;
+        const el = document.createElement('div');
+        el.id = 'toast';
+        el.className = 'hidden fixed top-20 right-4 z-50 max-w-md';
+        document.body.appendChild(el);
+        toastEl = el;
+        return el;
+    }
     function showToast(message, type = 'success') {
-        toastEl.innerHTML = `<div class="px-4 py-3 rounded-lg shadow text-white ${type === 'error' ? 'bg-red-600' : 'bg-green-600'}">${message}</div>`;
-        toastEl.classList.remove('hidden');
-        setTimeout(() => toastEl.classList.add('hidden'), 2200);
+        const el = ensureToast();
+        el.innerHTML = `<div class="px-4 py-3 rounded-lg shadow text-white ${type === 'error' ? 'bg-red-600' : 'bg-green-600'}">${message}</div>`;
+        el.classList.remove('hidden');
+        setTimeout(() => el.classList.add('hidden'), 2200);
     }
 
     // Cập nhật số lượng giỏ hàng
@@ -543,7 +574,7 @@
                         <div class="js-meta flex items-center gap-2 text-xs text-gray-500"></div>
                     </div>
                     <div class="flex items-center gap-2 pt-2">
-                        <button class="btn-add-cart flex-1 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold py-2 rounded-lg" data-id="${p.id}">Them vao gio</button>
+                        <button class="btn-add-cart flex-1 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold py-2 rounded-lg" data-id="${p.id}">Thêm vào giỏ</button>
                         <a href="/user/product/${p.id}" class="w-10 h-10 border border-gray-200 rounded-lg flex items-center justify-center hover:border-orange-400" aria-label="Xem chi tiet">
                             <i class="fas fa-eye"></i>
                         </a>
@@ -670,6 +701,142 @@
     }
 
     updateCartCount();
+
+    // ===== CAROUSEL LOGIC (Hero Banner) =====
+    console.log('Starting carousel initialization...');
+    
+    // Lấy dữ liệu từ hidden div
+    const carouselData = (() => {
+        const items = document.querySelectorAll('#carousel-data-holder .carousel-item');
+        const data = Array.from(items).map(item => ({
+            id: parseInt(item.dataset.id) || 0,
+            imageUrl: item.dataset.image || ''
+        })).filter(p => p.imageUrl);
+        console.log('Carousel data loaded:', data);
+        return data;
+    })();
+
+    if (carouselData.length === 0) {
+        console.warn('No banner products available');
+    } else {
+        console.log('Total products:', carouselData.length);
+    }
+
+    let currentSlide = 0;
+    let autoPlayTimeout;
+
+    const carouselElements = {
+        image: document.getElementById('carousel-image'),
+        current: document.getElementById('carousel-current'),
+        dots: document.getElementById('carousel-dots'),
+        prevBtn: document.getElementById('carousel-prev'),
+        nextBtn: document.getElementById('carousel-next')
+    };
+
+    console.log('Carousel elements found:', Object.keys(carouselElements).length);
+
+    function createDots() {
+        if (carouselData.length === 0 || !carouselElements.dots) return;
+        carouselElements.dots.innerHTML = carouselData.map((_, i) => 
+            `<button class="carousel-dot w-2.5 h-2.5 rounded-full transition cursor-pointer ${i === 0 ? 'bg-orange-500' : 'bg-white/40'}" data-slide="${i}" type="button"></button>`
+        ).join('');
+        
+        document.querySelectorAll('.carousel-dot').forEach(dot => {
+            dot.addEventListener('click', (e) => {
+                e.preventDefault();
+                clearTimeout(autoPlayTimeout);
+                const slideIndex = parseInt(dot.dataset.slide);
+                console.log('Dot clicked, going to slide:', slideIndex);
+                goToSlide(slideIndex);
+                startAutoPlay();
+            });
+        });
+        console.log('Dots created:', carouselData.length);
+    }
+
+    function updateCarouselImage() {
+        if (carouselData.length === 0) return;
+        const product = carouselData[currentSlide];
+        console.log('Updating to slide:', currentSlide, 'Image:', product.imageUrl);
+        
+        if (carouselElements.image && product.imageUrl) {
+            carouselElements.image.src = product.imageUrl;
+            carouselElements.image.alt = `Product ${currentSlide + 1}`;
+            console.log('✓ Image loaded:', product.imageUrl);
+        }
+        
+        if (carouselElements.current) {
+            carouselElements.current.textContent = currentSlide + 1;
+        }
+        
+        // Update dots styling
+        document.querySelectorAll('.carousel-dot').forEach((dot, i) => {
+            if (i === currentSlide) {
+                dot.classList.remove('bg-white/40');
+                dot.classList.add('bg-orange-500');
+            } else {
+                dot.classList.add('bg-white/40');
+                dot.classList.remove('bg-orange-500');
+            }
+        });
+    }
+
+    function goToSlide(n) {
+        if (carouselData.length === 0) return;
+        currentSlide = ((n % carouselData.length) + carouselData.length) % carouselData.length;
+        updateCarouselImage();
+    }
+
+    function nextSlide() {
+        goToSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+        goToSlide(currentSlide - 1);
+    }
+
+    function startAutoPlay() {
+        clearTimeout(autoPlayTimeout);
+        autoPlayTimeout = setTimeout(() => {
+            nextSlide();
+            startAutoPlay();
+        }, 3000);
+    }
+
+    function initCarousel() {
+        console.log('initCarousel called with', carouselData.length, 'products');
+        if (carouselData.length === 0) {
+            console.warn('No banner products available');
+            return;
+        }
+        
+        createDots();
+        updateCarouselImage();
+        
+        if (carouselElements.prevBtn) {
+            carouselElements.prevBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                clearTimeout(autoPlayTimeout);
+                prevSlide();
+                startAutoPlay();
+            });
+        }
+        
+        if (carouselElements.nextBtn) {
+            carouselElements.nextBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                clearTimeout(autoPlayTimeout);
+                nextSlide();
+                startAutoPlay();
+            });
+        }
+        
+        startAutoPlay();
+        console.log('✓ Carousel initialized successfully');
+    }
+
+    // Start carousel
+    initCarousel();
 </script>
 
 </body>

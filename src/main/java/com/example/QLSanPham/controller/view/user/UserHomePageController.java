@@ -35,6 +35,10 @@ public class UserHomePageController {
         model.addAttribute("products", products.getContent());
         model.addAttribute("sizeProducts", products.getTotalElements());
         
+        // Lấy 5 sản phẩm cho Hero banner carousel
+        Page<Product> bannerProducts = productService.getAllProducts(PageRequest.of(0, 5));
+        model.addAttribute("bannerProducts", bannerProducts.getContent());
+        
         // Thêm thông tin tìm kiếm
         model.addAttribute("searchKeyword", q);
         model.addAttribute("isSearchMode", q != null && !q.trim().isEmpty());

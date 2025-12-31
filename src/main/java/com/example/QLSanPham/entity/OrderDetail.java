@@ -1,10 +1,23 @@
 package com.example.QLSanPham.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
 import java.math.BigDecimal;
 
 import com.example.QLSanPham.entity.base.BaseEntity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "OrderDetails")
@@ -36,8 +49,4 @@ public class OrderDetail extends BaseEntity {
 
     @Column(name = "price_at_purchase", nullable = false, precision = 18, scale = 2)
     private BigDecimal priceAtPurchase; // Giá tại thời điểm mua
-}
-
-enum OrderStatus {
-    PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED
 }

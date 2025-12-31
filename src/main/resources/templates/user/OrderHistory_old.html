@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch sử mua hàng</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 text-gray-800 min-h-screen">
+
+<div th:replace="~{user/Fragment/Header :: header}"></div>
+
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <nav class="text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
+        <ol class="flex items-center gap-2">
+            <li><a href="/user/home" class="hover:text-orange-600"><i class="fas fa-home"></i> Trang chủ</a></li>
+            <li>/</li>
+            <li class="text-gray-700 font-semibold">Lịch sử mua hàng</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">
+            <i class="fas fa-history text-orange-500 mr-2"></i>
+            Lịch sử mua hàng
+        </h1>
+        <p class="text-gray-600 mt-2">Xem chi tiết tất cả các đơn hàng của bạn</p>
+    </div>
+
+    <!-- Success Toast -->
+    <div th:if="${newOrderId}" id="success-toast" class="mb-6 bg-green-50 border border-green-200 rounded-lg p-4 transition-opacity duration-500">
+        <div class="flex items-center gap-3">
+            <i class="fas fa-check-circle text-2xl text-green-500"></i>
+            <div>
+                <p class="font-semibold text-green-900">Đặt hàng thành công!</p>
+                <p class="text-sm text-green-700">Đơn hàng của bạn đã được tiếp nhận.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div th:if="${orders == null or orders.isEmpty()}" class="bg-white border-2 border-dashed border-gray-300 rounded-2xl p-12 text-center">
+        <div class="w-32 h-32 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+            <i class="fas fa-inbox text-5xl text-gray-400"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-700 mb-2">Chưa có đơn hàng</h3>
+        <a href="/user/home" class="inline-block bg-orange-500 hover:bg-orange-600 text-white font-semibold px-8 py-3 rounded-lg shadow mt-4">
+            <i class="fas fa-shopping-bag mr-2"></i>Mua sắm ngay
+        </a>
+    </div>
+
+    <!-- Orders List -->
+    <div th:if="${orders != null and !orders.isEmpty()}" class="space-y-6">
+        <article th:each="order : ${orders}"
+                 th:classappend="${newOrderId != null and newOrderId == order.id} ? 'ring-2 ring-green-400' : ''"
+                 class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+                <!-- Mã đơn -->
+                <div>
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Mã đơn hàng</p>
+                    <p class="text-lg font-bold text-gray-900">ORD-<span th:text="${order.id}"></span></p>
+                </div>
+
+                <!-- Ngày đặt -->
+                <div>
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Ngày đặt</p>
+                    <p class="text-sm font-semibold text-gray-700 mt-1" 
+                       th:text="${order.orderDate != null ? #temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm') : 'N/A'}"></p>
+                </div>
+
+                <!-- Trạng thái -->
+                <div>
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Trạng thái</p>
+                    <div class="mt-2">
+                        <span th:if="${#strings.toString(order.status) == 'PENDING'}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                            <i class="fas fa-hourglass-half mr-1.5"></i>Chờ xác nhận
+                        </span>
+                        <span th:if="${#strings.toString(order.status) == 'CONFIRMED'}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                            <i class="fas fa-clipboard-check mr-1.5"></i>Đã xác nhận
+                        </span>
+                        <span th:if="${#strings.toString(order.status) == 'SHIPPED'}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200">
+                            <i class="fas fa-shipping-fast mr-1.5"></i>Đang giao
+                        </span>
+                        <span th:if="${#strings.toString(order.status) == 'DELIVERED'}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                            <i class="fas fa-check-circle mr-1.5"></i>Đã giao
+                        </span>
+                        <span th:if="${#strings.toString(order.status) == 'CANCELLED'}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
+                            <i class="fas fa-times-circle mr-1.5"></i>Đã hủy
+                        </span>
+                        <span th:if="${#strings.toString(order.status) != 'PENDING' and #strings.toString(order.status) != 'CONFIRMED' and #strings.toString(order.status) != 'SHIPPED' and #strings.toString(order.status) != 'DELIVERED' and #strings.toString(order.status) != 'CANCELLED'}"
+                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
+                             th:text="${order.status}">
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Tổng tiền -->
+                <div>
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Tổng tiền</p>
+                    <p class="text-lg font-bold text-red-600 mt-1" 
+                       th:text="${order.totalAmount != null ? #numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT') + ' ₫' : '0 ₫'}"></p>
+                </div>
+
+                <!-- Thanh toán -->
+                <div>
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Thanh toán</p>
+                    <p class="text-sm font-semibold text-gray-700 mt-1" 
+                       th:text="${order.paymentMethod == 'cod' ? 'Tiền mặt (COD)' : 'Chuyển khoản'}"></p>
+                </div>
+            </div>
+
+            <!-- Địa chỉ -->
+            <div class="border-t border-gray-100 pt-4 mb-4">
+                <p class="text-sm font-semibold text-gray-900 mb-2 flex items-center">
+                    <i class="fas fa-map-marker-alt text-orange-500 mr-2"></i>
+                    Địa chỉ nhận hàng:
+                    <span class="ml-2 font-normal text-gray-600" th:text="${order.shippingAddress != null ? order.shippingAddress : 'Chưa cập nhật'}"></span>
+                </p>
+            </div>
+
+            <!-- List sản phẩm ẩn (chứa data) -->
+            <div class="bg-gray-50 rounded-xl p-4 product-list-container">
+                <p class="text-sm font-bold text-gray-700 mb-3"><i class="fas fa-box-open text-gray-500 mr-2"></i>Chi tiết sản phẩm</p>
+                <div class="space-y-3">
+                    <div th:if="${order.orderDetails != null}" th:each="detail : ${order.orderDetails}"
+                         class="js-order-item flex justify-between items-center border-b border-gray-200 last:border-0 pb-2 last:pb-0">
+                        <div class="flex-1">
+                            <p class="js-product-name font-medium text-gray-800 text-sm" th:text="${detail.product != null ? detail.product.name : 'Sản phẩm không tồn tại'}"></p>
+                            <p class="text-xs text-gray-500 mt-1">
+                                <span class="js-quantity" th:text="${detail.quantity}"></span> x 
+                                <span class="js-price" th:text="${detail.priceAtPurchase != null ? #numbers.formatDecimal(detail.priceAtPurchase, 0, 'COMMA', 0, 'POINT') : 0}"></span> ₫
+                            </p>
+                        </div>
+                        <div class="text-right">
+                            <span class="js-total font-bold text-gray-900 text-sm" 
+                                  th:text="${(detail.priceAtPurchase != null && detail.quantity != null) ? #numbers.formatDecimal(detail.priceAtPurchase * detail.quantity, 0, 'COMMA', 0, 'POINT') : 0} + ' ₫'"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions Buttons -->
+            <div class="mt-6 flex flex-wrap gap-3 justify-end">
+                <!-- SỬA LỖI: Bỏ onclick, thêm class 'js-btn-view-detail' -->
+                <a th:href="@{/user/order-detail/{id}(id=${order.id})}"
+                   class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 shadow-sm hover:shadow-lg hover:scale-105 transform">
+                    <i class="fas fa-eye"></i> 
+                    <span>Xem chi tiết</span>
+                </a>
+                
+                <form th:if="${#strings.toString(order.status) == 'PENDING'}" action="#" method="POST">
+                     <button type="submit" class="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                        <i class="fas fa-times"></i> Hủy đơn hàng
+                    </button>
+                </form>
+
+                <button th:if="${#strings.toString(order.status) == 'DELIVERED'}"
+                        class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-sm font-medium transition flex items-center gap-2 shadow-sm shadow-orange-200">
+                    <i class="fas fa-star"></i> Đánh giá
+                </button>
+            </div>
+        </article>
+    </div>
+
+    <!-- Pagination -->
+    <div th:if="${orders != null and orders.size() > 0}" class="mt-8 flex justify-center gap-2">
+        <a href="?page=0" class="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 rounded-lg hover:border-orange-500 hover:text-orange-500 transition"><i class="fas fa-chevron-left"></i></a>
+        <a href="?page=1" class="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 rounded-lg hover:border-orange-500 hover:text-orange-500 transition"><i class="fas fa-chevron-right"></i></a>
+    </div>
+</main>
+
+<div th:replace="~{user/Fragment/Footer :: footer}"></div>
+
+<script>
+    // Tự động ẩn thông báo thành công sau 5s
+    const toast = document.getElementById('success-toast');
+    if (toast) {
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 500);
+        }, 5000);
+    }
+</script>
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4 flex justify-between items-center flex-shrink-0">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i class="fas fa-receipt"></i>
+                    <span id="modalTitle">Chi tiết đơn hàng</span>
+                </h3>
+                <!-- Nút đóng thêm class js-btn-close -->
+                <button type="button" class="js-btn-close text-white hover:bg-orange-600 rounded-full p-2 transition cursor-pointer">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="overflow-y-auto p-6 flex-grow">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="space-y-4">
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h4 class="font-bold text-gray-900 mb-3 flex items-center"><i class="fas fa-info-circle text-orange-500 mr-2"></i>Thông tin</h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between"><span class="text-gray-600">Mã đơn:</span><span id="modalOrderCode" class="font-semibold text-gray-900"></span></div>
+                                <div class="flex justify-between"><span class="text-gray-600">Ngày đặt:</span><span id="modalOrderDate" class="font-semibold text-gray-900"></span></div>
+                                <div class="flex justify-between items-center"><span class="text-gray-600">Trạng thái:</span><span id="modalOrderStatus" class="px-2.5 py-0.5 rounded-full text-xs font-medium"></span></div>
+                                <div class="flex justify-between"><span class="text-gray-600">Thanh toán:</span><span id="modalPaymentMethod" class="font-semibold text-gray-900"></span></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                            <h4 class="font-bold text-gray-900 mb-3 flex items-center"><i class="fas fa-map-marker-alt text-blue-600 mr-2"></i>Giao hàng</h4>
+                            <p id="modalShippingAddress" class="text-sm text-gray-700 leading-relaxed"></p>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Status -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h4 class="font-bold text-gray-900 mb-4 flex items-center"><i class="fas fa-shipping-fast text-orange-500 mr-2"></i>Tiến độ</h4>
+                        <div class="space-y-0" id="modalTimeline"></div>
+                    </div>
+                </div>
+
+                <div class="border-t pt-6">
+                    <h4 class="font-bold text-gray-900 mb-4 flex items-center"><i class="fas fa-box-open text-orange-500 mr-2"></i>Sản phẩm</h4>
+                    <div id="modalProductList" class="space-y-3"></div>
+                </div>
+
+                <div class="border-t mt-6 pt-4 flex justify-between items-center">
+                    <span class="text-lg font-bold text-gray-900">Tổng cộng:</span>
+                    <span id="modalTotalAmount" class="text-2xl font-bold text-red-600"></span>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="bg-gray-50 px-6 py-4 flex justify-end gap-3 border-t flex-shrink-0">
+                <button type="button" class="js-btn-close px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-sm font-medium transition cursor-pointer">Đóng</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{user/Fragment/Footer :: footer}"></div>
+
+<!-- SCRIPT NẰM CUỐI CÙNG VÀ DÙNG EVENT LISTENER -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Trang đã tải xong, đang gắn sự kiện...");
+
+        // 1. Tự động tắt Toast
+        const toast = document.getElementById('success-toast');
+        if (toast) {
+            setTimeout(() => { 
+                toast.style.opacity = '0'; 
+                setTimeout(() => toast.remove(), 500); 
+            }, 5000);
+        }
+
+        // 2. Gắn sự kiện click cho nút "Xem chi tiết" (Dùng class .js-btn-view-detail)
+        const viewButtons = document.querySelectorAll('.js-btn-view-detail');
+        viewButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                openModal(this);
+            });
+        });
+
+        // 3. Gắn sự kiện click cho nút "Đóng" (Dùng class .js-btn-close)
+        const closeButtons = document.querySelectorAll('.js-btn-close');
+        closeButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                closeModal();
+            });
+        });
+
+        // 4. Click ra ngoài modal thì đóng
+        const modal = document.getElementById('orderDetailModal');
+        if(modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+        }
+    });
+
+    // --- Các hàm xử lý ---
+
+    function openModal(button) {
+        console.log("Đang mở modal..."); 
+        const ds = button.dataset;
+        
+        // Fill dữ liệu
+        document.getElementById('modalTitle').textContent = 'Chi tiết ' + ds.orderCode;
+        document.getElementById('modalOrderCode').textContent = ds.orderCode;
+        document.getElementById('modalOrderDate').textContent = ds.orderDate;
+        document.getElementById('modalPaymentMethod').textContent = ds.orderPayment;
+        document.getElementById('modalShippingAddress').textContent = ds.orderAddress || 'Chưa cập nhật';
+        document.getElementById('modalTotalAmount').textContent = formatCurrency(ds.orderTotal) + ' ₫';
+
+        // Badge Status
+        const statusConfig = getStatusConfig(ds.orderStatus);
+        const statusBadge = document.getElementById('modalOrderStatus');
+        statusBadge.textContent = statusConfig.text;
+        statusBadge.className = `px-2.5 py-0.5 rounded-full text-xs font-medium ${statusConfig.class}`;
+
+        createTimeline(ds.orderStatus, ds.orderDate);
+        loadProductList(button);
+
+        document.getElementById('orderDetailModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; 
+    }
+
+    function closeModal() {
+        document.getElementById('orderDetailModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('vi-VN').format(amount);
+    }
+
+    function getStatusConfig(status) {
+        const configs = {
+            'PENDING': { text: 'Chờ xác nhận', class: 'bg-yellow-100 text-yellow-800 border border-yellow-200' },
+            'CONFIRMED': { text: 'Đã xác nhận', class: 'bg-blue-100 text-blue-800 border border-blue-200' },
+            'SHIPPED': { text: 'Đang giao', class: 'bg-purple-100 text-purple-800 border border-purple-200' },
+            'DELIVERED': { text: 'Đã giao', class: 'bg-green-100 text-green-800 border border-green-200' },
+            'CANCELLED': { text: 'Đã hủy', class: 'bg-red-100 text-red-800 border border-red-200' }
+        };
+        return configs[status] || { text: status, class: 'bg-gray-100 text-gray-800' };
+    }
+
+    function createTimeline(currentStatus, orderDate) {
+        const timeline = document.getElementById('modalTimeline');
+        const steps = [
+            { key: 'PENDING', text: 'Đặt hàng', icon: 'fa-file-invoice', color: 'yellow' },
+            { key: 'CONFIRMED', text: 'Đã xác nhận', icon: 'fa-clipboard-check', color: 'blue' },
+            { key: 'SHIPPED', text: 'Đang giao', icon: 'fa-truck', color: 'purple' },
+            { key: 'DELIVERED', text: 'Hoàn thành', icon: 'fa-check-circle', color: 'green' }
+        ];
+
+        if (currentStatus === 'CANCELLED') {
+            timeline.innerHTML = `
+                <div class="flex gap-4">
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center z-10"><i class="fas fa-times text-white"></i></div>
+                    </div>
+                    <div class="pb-8 pt-2">
+                        <p class="font-bold text-red-600">Đơn hàng đã bị hủy</p>
+                        <p class="text-xs text-gray-500">${orderDate}</p>
+                    </div>
+                </div>`;
+            return;
+        }
+
+        const currentIndex = steps.findIndex(s => s.key === currentStatus);
+        const activeIndex = currentIndex === -1 ? 0 : currentIndex; 
+
+        let html = '';
+        steps.forEach((step, index) => {
+            const isCompleted = index <= activeIndex;
+            const isLast = index === steps.length - 1;
+            
+            let bgClass = 'bg-gray-200';
+            let lineClass = 'bg-gray-200';
+            
+            // Màu nền icon
+            if (isCompleted) {
+                 if(step.color === 'yellow') bgClass = 'bg-yellow-500';
+                 else if(step.color === 'blue') bgClass = 'bg-blue-500';
+                 else if(step.color === 'purple') bgClass = 'bg-purple-500';
+                 else if(step.color === 'green') bgClass = 'bg-green-500';
+            }
+
+            // Màu đường kẻ
+            if(index < activeIndex) {
+                 if(step.color === 'yellow') lineClass = 'bg-yellow-500';
+                 else if(step.color === 'blue') lineClass = 'bg-blue-500';
+                 else if(step.color === 'purple') lineClass = 'bg-purple-500';
+                 else if(step.color === 'green') lineClass = 'bg-green-500';
+            }
+
+            const iconColor = isCompleted ? 'text-white' : 'text-gray-400';
+            const textColor = isCompleted ? 'text-gray-900 font-semibold' : 'text-gray-400 font-medium';
+            
+            html += `
+                <div class="flex gap-4 relative">
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 rounded-full ${bgClass} flex items-center justify-center z-10 transition-colors duration-500">
+                            <i class="fas ${step.icon} ${iconColor} text-sm"></i>
+                        </div>
+                        ${!isLast ? `<div class="w-1 absolute top-10 bottom-0 ${lineClass} -ml-0 transition-colors duration-500" style="left: 1.15rem;"></div>` : ''}
+                    </div>
+                    <div class="pb-8 pt-2">
+                        <p class="${textColor}">${step.text}</p>
+                        ${index === activeIndex ? `<p class="text-xs text-gray-500 mt-1">${orderDate}</p>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+        timeline.innerHTML = html;
+    }
+
+    function loadProductList(button) {
+        const orderCard = button.closest('article');
+        const items = orderCard.querySelectorAll('.js-order-item');
+        let html = '';
+
+        items.forEach(item => {
+            const name = item.querySelector('.js-product-name')?.innerText || 'Sản phẩm';
+            const quantity = item.querySelector('.js-quantity')?.innerText || '0';
+            const price = item.querySelector('.js-price')?.innerText || '0';
+            const total = item.querySelector('.js-total')?.innerText || '0';
+
+            html += `
+                <div class="flex items-center gap-4 bg-gray-50 rounded-lg p-3 border border-gray-100">
+                    <div class="w-12 h-12 bg-white rounded-md border border-gray-200 flex items-center justify-center flex-shrink-0 text-gray-400">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-medium text-gray-900 text-sm truncate">${name}</p>
+                        <p class="text-xs text-gray-500">SL: ${quantity} x ${price} ₫</p>
+                    </div>
+                    <div class="font-bold text-gray-900 text-sm">${total}</div>
+                </div>
+            `;
+        });
+        document.getElementById('modalProductList').innerHTML = html || '<div class="text-center text-gray-500 py-4">Không có dữ liệu</div>';
+    }
+</script>
+
+</body>
+</html>

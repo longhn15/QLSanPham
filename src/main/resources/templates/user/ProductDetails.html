@@ -55,14 +55,14 @@
                 </div>
 
                 <!-- Price Section - Chuyên nghiệp hơn -->
-                <div class="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-xl p-6">
+                <div class="product-card bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-xl p-6" th:data-price="${product.price}">
                     <div class="flex items-end justify-between">
                         <div>
                             <p class="text-sm text-gray-600 font-medium mb-1">GIÁ HIỆN TẠI</p>
                             <div class="flex items-baseline gap-3">
-                                <span class="text-4xl font-bold text-red-600" th:text="${#numbers.formatDecimal(product.price,0,'COMMA',0,'POINT')} + ' đ'">0 đ</span>
-                                <span class="text-lg line-through text-gray-400" th:text="${product.price}" ></span>
-                                <span class="inline-block px-2 py-1 bg-red-100 text-red-700 text-xs font-bold rounded">-15%</span>
+                                <span class="js-new-price text-4xl font-bold text-red-600" th:text="|${#numbers.formatDecimal(product.price,0,'COMMA',0,'POINT')} đ|">0 đ</span>
+                                <span class="js-old-price text-lg line-through text-gray-400" th:text="|${#numbers.formatDecimal(product.price,0,'COMMA',0,'POINT')} đ|"></span>
+                                <span class="js-discount-badge inline-block px-2 py-1 bg-red-100 text-red-700 text-xs font-bold rounded">-15%</span>
                             </div>
                         </div>
                         <div class="text-right">
@@ -223,9 +223,9 @@
     </div>
 </div>
 
-<script>
+<script th:inline="javascript">
     // Quantity control
-    const maxStock = [[${product.stockQuantity}]];
+    const maxStock = /*[[${product.stockQuantity}]]*/ 100;
     
     function decreaseQty() {
         const input = document.getElementById('pd-qty');
@@ -396,6 +396,32 @@
 
     // Update cart count on page load
     updateCartCount();
+
+    // Format VND currency
+    function formatVND(n) {
+        try { return (Math.round(n)).toLocaleString('vi-VN') + ' đ'; } catch (_) { return n + ' đ'; }
+    }
+
+    // Apply random discount pricing (reusing function from HomePage)
+    function applyRandomPricing(scope = document) {
+        scope.querySelectorAll('.product-card').forEach(card => {
+            const baseStr = card.getAttribute('data-price');
+            const base = parseFloat(baseStr);
+            if (!base || isNaN(base)) return;
+            const discount = Math.floor(Math.random() * 16) + 5; // 5..20%
+            const newPrice = Math.round(base * (100 - discount) / 100);
+
+            const newEl = card.querySelector('.js-new-price');
+            const oldEl = card.querySelector('.js-old-price');
+            const badgeEl = card.querySelector('.js-discount-badge');
+            if (newEl) newEl.textContent = formatVND(newPrice);
+            if (oldEl) oldEl.textContent = formatVND(base);
+            if (badgeEl) badgeEl.textContent = `-${discount}%`;
+        });
+    }
+
+    // Apply pricing to product detail
+    applyRandomPricing(document);
 </script>
 
 </body>

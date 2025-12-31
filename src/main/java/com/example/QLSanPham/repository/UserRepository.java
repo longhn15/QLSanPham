@@ -11,6 +11,8 @@ import com.example.QLSanPham.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    Optional<User> findById(Long id);
     
     // Dùng Optional để tránh NullPointerException khi code Service
     Optional<User> findByUsername(String username);

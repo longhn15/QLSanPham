@@ -1,89 +1,547 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thanh toan</title>
+    <title>Thanh toán</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 text-gray-800 min-h-screen">
 
 <div th:replace="~{user/Fragment/Header :: header}"></div>
 
 <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <h1 class="text-2xl font-bold mb-6">Thanh toan</h1>
+    <!-- Breadcrumb -->
+    <nav class="text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
+        <ol class="flex items-center gap-2">
+            <li><a href="/user/home" class="hover:text-orange-600"><i class="fas fa-home"></i> Trang chủ</a></li>
+            <li>/</li>
+            <li><a href="/user/cart" class="hover:text-orange-600">Giỏ hàng</a></li>
+            <li>/</li>
+            <li class="text-gray-700 font-semibold">Thanh toán</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">
+            <i class="fas fa-credit-card text-orange-500 mr-2"></i>
+            Thanh toán đơn hàng
+        </h1>
+        <p class="text-gray-600 mt-2">Kiểm tra thông tin và hoàn tất đơn hàng của bạn</p>
+    </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Form -->
-        <section class="lg:col-span-2 bg-white border border-gray-200 rounded-xl p-6 space-y-4">
-            <h2 class="font-semibold text-lg">Thong tin nhan hang</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label class="text-sm text-gray-600">Ho ten</label>
-                    <input type="text" class="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 focus:outline-none" placeholder="Nhap ho ten">
-                </div>
-                <div>
-                    <label class="text-sm text-gray-600">So dien thoai</label>
-                    <input type="text" class="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 focus:outline-none" placeholder="0123 456 789">
-                </div>
-                <div class="sm:col-span-2">
-                    <label class="text-sm text-gray-600">Dia chi</label>
-                    <input type="text" class="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 focus:outline-none" placeholder="So nha, duong, phuong xa">
-                </div>
-                <div>
-                    <label class="text-sm text-gray-600">Tinh/Thanh pho</label>
-                    <input type="text" class="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 focus:outline-none" placeholder="Ha Noi">
-                </div>
-                <div>
-                    <label class="text-sm text-gray-600">Quan/Huyen</label>
-                    <input type="text" class="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 focus:outline-none" placeholder="Cau Giay">
+        <!-- Main Content - 1/3 width -->
+        <section class="lg:col-span-1 space-y-6">
+            <!-- Customer Info Section -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-6">
+                <h2 class="font-bold text-xl text-gray-900 mb-4 flex items-center gap-2">
+                    <i class="fas fa-user text-orange-500"></i>
+                    Thông tin khách hàng
+                </h2>
+                <form id="customer-form" class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Họ tên <span class="text-red-500">*</span></label>
+                            <input type="text" id="fullName" name="fullName" required
+                                   th:value="${userFullName != null ? userFullName : 'user'}"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 focus:outline-none"
+                                   placeholder="Nhập họ tên">
+                            <p id="fullName-error" class="text-xs text-red-600 mt-1 hidden"></p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Số điện thoại <span class="text-red-500">*</span></label>
+                            <input type="tel" id="phone" name="phone" required
+                                   th:value="${userPhone != null ? userPhone : '0123456789'}"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 focus:outline-none"
+                                   placeholder="0123 456 789">
+                            <p id="phone-error" class="text-xs text-red-600 mt-1 hidden"></p>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="email" name="email"
+                               th:value="${userEmail != null ? userEmail : ''}"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 focus:outline-none"
+                               placeholder="example@email.com">
+                    </div>
+                </form>
+            </div>
+
+            <!-- Address Section -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-6">
+                <h2 class="font-bold text-xl text-gray-900 mb-4 flex items-center gap-2">
+                    <i class="fas fa-map-marker-alt text-orange-500"></i>
+                    Địa chỉ giao hàng
+                </h2>
+                <form id="address-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Địa chỉ chi tiết <span class="text-red-500">*</span></label>
+                        <input type="text" id="address" name="address" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 focus:outline-none"
+                               placeholder="Số nhà, tên đường, phường xã">
+                        <p id="address-error" class="text-xs text-red-600 mt-1 hidden"></p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tỉnh/Thành phố <span class="text-red-500">*</span></label>
+                            <input type="text" id="province" name="province" required
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 focus:outline-none"
+                                   placeholder="Hà Nội">
+                            <p id="province-error" class="text-xs text-red-600 mt-1 hidden"></p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Quận/Huyện <span class="text-red-500">*</span></label>
+                            <input type="text" id="district" name="district" required
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 focus:outline-none"
+                                   placeholder="Cầu Giấy">
+                            <p id="district-error" class="text-xs text-red-600 mt-1 hidden"></p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Delivery Method Section -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-6">
+                <h2 class="font-bold text-xl text-gray-900 mb-4 flex items-center gap-2">
+                    <i class="fas fa-truck text-orange-500"></i>
+                    Phương thức giao hàng
+                </h2>
+                <div class="space-y-3">
+                    <label class="flex items-center gap-4 p-4 border-2 border-orange-500 rounded-lg bg-orange-50 cursor-pointer">
+                        <input type="radio" name="shipping" value="standard" checked class="w-4 h-4 text-orange-500">
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-900">Giao hàng chuẩn</p>
+                            <p class="text-sm text-gray-600">Dự kiến giao: 3-5 ngày</p>
+                        </div>
+                        <span class="text-lg font-bold text-orange-600" id="shipping-cost-standard">30.000 ₫</span>
+                    </label>
+                    <label class="flex items-center gap-4 p-4 border-2 border-gray-300 rounded-lg hover:border-orange-300 cursor-pointer">
+                        <input type="radio" name="shipping" value="express" class="w-4 h-4 text-orange-500">
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-900">Giao hàng nhanh</p>
+                            <p class="text-sm text-gray-600">Dự kiến giao: 1-2 ngày</p>
+                        </div>
+                        <span class="text-lg font-bold text-orange-600">60.000 ₫</span>
+                    </label>
                 </div>
             </div>
 
-            <div class="pt-2">
-                <h3 class="font-semibold text-lg mb-3">Phuong thuc thanh toan</h3>
-                <div class="space-y-2">
-                    <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:border-orange-400 cursor-pointer">
-                        <input type="radio" name="payment" value="cod" checked class="text-orange-500">
-                        <span>Thanh toan khi nhan hang (COD)</span>
+            <!-- Payment Method Section -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-6">
+                <h2 class="font-bold text-xl text-gray-900 mb-4 flex items-center gap-2">
+                    <i class="fas fa-wallet text-orange-500"></i>
+                    Phương thức thanh toán
+                </h2>
+                <div class="space-y-3">
+                    <label class="flex items-center gap-4 p-4 border-2 border-orange-500 rounded-lg bg-orange-50 cursor-pointer">
+                        <input type="radio" name="payment" value="cod" checked class="w-4 h-4 text-orange-500">
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-900">Thanh toán khi nhận hàng (COD)</p>
+                            <p class="text-sm text-gray-600">Không phí xử lý bổ sung</p>
+                        </div>
+                        <i class="fas fa-check text-orange-500 text-xl"></i>
                     </label>
-                    <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:border-orange-400 cursor-pointer">
-                        <input type="radio" name="payment" value="bank" class="text-orange-500">
-                        <span>Chuyen khoan ngan hang</span>
+                    <label class="flex items-center gap-4 p-4 border-2 border-gray-300 rounded-lg hover:border-orange-300 cursor-pointer opacity-50 pointer-events-none">
+                        <input type="radio" name="payment" value="bank" class="w-4 h-4 text-orange-500">
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-900">Chuyển khoản ngân hàng</p>
+                            <p class="text-sm text-gray-600">Sắp có</p>
+                        </div>
                     </label>
                 </div>
+            </div>
+
+            <!-- Note Section -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-6">
+                <h2 class="font-bold text-xl text-gray-900 mb-4 flex items-center gap-2">
+                    <i class="fas fa-sticky-note text-orange-500"></i>
+                    Ghi chú đơn hàng
+                </h2>
+                <textarea id="note" name="note" rows="3"
+                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 focus:outline-none"
+                          placeholder="Ghi chú thêm cho đơn hàng (tuỳ chọn)"></textarea>
             </div>
         </section>
 
-        <!-- Summary -->
-        <aside class="bg-white border border-gray-200 rounded-xl p-6 h-fit space-y-4">
-            <h2 class="font-semibold text-lg">Don hang</h2>
-            <div class="space-y-3 text-sm">
-                <div class="flex justify-between" th:each="item : ${cartItems}">
-                    <span th:text="${item.name}">Ten san pham</span>
-                    <span th:text="${#numbers.formatDecimal(item.price,0,'COMMA',0,'POINT')} + ' d x ' + ${item.quantity}">0 d</span>
+        <!-- Sidebar - 2/3 width -->
+        <aside class="lg:col-span-2 lg:sticky lg:top-24 h-fit">
+            <div class="bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden">
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-5">
+                    <h2 class="font-bold text-xl flex items-center gap-2">
+                        <i class="fas fa-shopping-bag"></i>
+                        Các sản phẩm đã chọn
+                    </h2>
+                </div>
+
+                <!-- Order Items -->
+                <div id="order-items" class="p-6 space-y-3 border-b border-gray-200 max-h-96 overflow-y-auto">
+                    <!-- Items will be populated by JavaScript -->
+                </div>
+
+                <!-- Totals -->
+                <div class="p-6 space-y-3">
+                    <!-- Subtotal -->
+                    <div class="flex justify-between text-gray-700">
+                        <span class="flex items-center gap-2">
+                            <i class="fas fa-calculator text-gray-400"></i>
+                            Tạm tính
+                        </span>
+                        <span id="summary-subtotal" class="font-semibold">0 ₫</span>
+                    </div>
+
+                    <!-- Shipping -->
+                    <div class="flex justify-between text-gray-700">
+                        <span class="flex items-center gap-2">
+                            <i class="fas fa-truck text-gray-400"></i>
+                            Vận chuyển
+                        </span>
+                        <span id="summary-shipping" class="font-semibold">30.000 ₫</span>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="border-t-2 border-dashed border-gray-200"></div>
+
+                    <!-- Total -->
+                    <div class="flex justify-between items-center py-3 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl px-4">
+                        <span class="font-bold text-lg text-gray-800">Tổng cộng:</span>
+                        <span id="summary-total" class="font-bold text-3xl text-red-600">0 ₫</span>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="space-y-3 pt-4">
+                        <!-- Back to Cart -->
+                        <a href="/user/cart" 
+                           class="block text-center bg-gray-300 hover:bg-gray-400 text-gray-900 font-bold py-3 rounded-lg transition">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            Quay lại giỏ hàng
+                        </a>
+
+                        <!-- Place Order Button -->
+                        <button onclick="submitOrder()"
+                                id="submit-btn"
+                                class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 rounded-lg shadow-lg transition transform hover:scale-105 hover:shadow-xl">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            Đặt đơn hàng
+                        </button>
+                    </div>
+
+                    <!-- Info -->
+                    <div class="mt-6 pt-4 border-t border-gray-200 space-y-2 text-xs text-gray-600">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-shield-alt text-green-600"></i>
+                            <span>Giao dịch an toàn</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-lock text-green-600"></i>
+                            <span>Dữ liệu được mã hoá</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="border-t border-gray-200 pt-3 text-sm text-gray-600 flex justify-between">
-                <span>Tam tinh</span>
-                <span th:text="${#numbers.formatDecimal(subtotal,0,'COMMA',0,'POINT')} + ' d'">0 d</span>
-            </div>
-            <div class="text-sm text-gray-600 flex justify-between">
-                <span>Phi van chuyen</span>
-                <span th:text="${shippingFee} != null ? ${shippingFee} + ' d' : 'Tinh sau'">Tinh sau</span>
-            </div>
-            <div class="border-t border-gray-200 pt-3 flex justify-between text-lg font-bold">
-                <span>Thanh tien</span>
-                <span th:text="${#numbers.formatDecimal(total,0,'COMMA',0,'POINT')} + ' d'">0 d</span>
-            </div>
-            <button class="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg shadow">Dat hang</button>
-            <a href="/cart" class="block text-center text-sm text-gray-600 hover:text-orange-600">Quay lai gio hang</a>
         </aside>
     </div>
 </main>
 
 <div th:replace="~{user/Fragment/Footer :: footer}"></div>
+
+<!-- Toast Notification -->
+<div id="toast" class="fixed top-20 right-4 bg-white border-l-4 border-green-500 shadow-xl rounded-lg p-4 transform transition-transform duration-300 z-50 max-w-md" style="transform: translateX(140%);">
+    <div class="flex items-center gap-3">
+        <i class="fas fa-check-circle text-2xl text-green-500"></i>
+        <div>
+            <p id="toast-message" class="font-semibold text-gray-900"></p>
+        </div>
+        <button onclick="hideToast()" class="ml-auto text-gray-400 hover:text-gray-600">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+</div>
+
+<script>
+const CURRENCY_FORMATTER = new Intl.NumberFormat('vi-VN');
+
+function formatCurrency(value) {
+    return `${CURRENCY_FORMATTER.format(value || 0)} ₫`;
+}
+
+function clearErrors() {
+    ['fullName','phone','address','province','district'].forEach(id => {
+        const input = document.getElementById(id);
+        const err = document.getElementById(`${id}-error`);
+        if (input) {
+            input.classList.remove('border-red-500','focus:ring-red-400');
+            input.classList.add('border-gray-300','focus:ring-orange-400');
+        }
+        if (err) {
+            err.textContent = '';
+            err.classList.add('hidden');
+        }
+    });
+}
+
+function setError(id, message) {
+    const input = document.getElementById(id);
+    const err = document.getElementById(`${id}-error`);
+    if (input) {
+        input.classList.remove('border-gray-300','focus:ring-orange-400');
+        input.classList.add('border-red-500','focus:ring-red-400');
+    }
+    if (err) {
+        err.textContent = message;
+        err.classList.remove('hidden');
+    }
+}
+
+function loadSelectedItems() {
+    const selectedItems = JSON.parse(localStorage.getItem('selectedCartItems') || '[]');
+    const selectedIds = JSON.parse(localStorage.getItem('selectedCartItemIds') || '[]');
+    if (selectedItems.length === 0) {
+        showToast('Không có sản phẩm được chọn. Quay lại giỏ hàng', 'error');
+        setTimeout(() => { window.location.href = '/user/cart'; }, 2000);
+    }
+    return { selectedItems, selectedIds };
+}
+
+async function fetchProductDetails() {
+    try {
+        const { selectedItems, selectedIds } = loadSelectedItems();
+        
+        if (selectedIds.length === 0) {
+            return selectedItems;
+        }
+
+        // Fetch full product details from API
+        const response = await fetch('/api/cart/get-selected-items', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                selectedItemIds: selectedIds.map(id => parseInt(id))
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data.success && data.data) {
+            return data.data;
+        } else {
+            console.error('Error fetching products:', data.message);
+            return selectedItems;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        const { selectedItems } = loadSelectedItems();
+        return selectedItems;
+    }
+}
+
+function renderOrderItems(items) {
+    const container = document.getElementById('order-items');
+    container.innerHTML = '';
+    
+    let subtotal = 0;
+    items.forEach(item => {
+        const itemTotal = item.quantity * (item.price || item.priceSnapshot || 0);
+        subtotal += itemTotal;
+        
+        const itemEl = document.createElement('div');
+        itemEl.className = 'flex items-center justify-between gap-4 py-3 border-b border-gray-100 last:border-b-0';
+        
+        // Check if we have full product info
+        const hasImage = item.productImage;
+        const productName = item.productName || `Sản phẩm #${item.id}`;
+        const categoryName = item.categoryName || '';
+        
+        const imageBlock = hasImage
+            ? `<img src="${item.productImage}" alt="${productName}" class="w-16 h-16 object-cover rounded border border-gray-200">`
+            : `<div class="w-16 h-16 rounded border border-dashed border-gray-300 flex items-center justify-center text-[11px] text-gray-400">Không ảnh</div>`;
+
+        itemEl.innerHTML = `
+            <div class="flex items-center gap-3 flex-1 min-w-0">
+                ${imageBlock}
+                <div class="min-w-0">
+                    <p class="font-semibold text-gray-900 truncate">${productName}</p>
+                    ${categoryName ? `<p class="text-xs text-gray-500">Loại: ${categoryName}</p>` : ''}
+                    <p class="text-sm text-gray-600">SL: ${item.quantity}</p>
+                </div>
+            </div>
+            <div class="text-right whitespace-nowrap">
+                <p class="font-bold text-gray-900">${formatCurrency(itemTotal)}</p>
+                <p class="text-xs text-gray-500">${formatCurrency(item.price || item.priceSnapshot)} x${item.quantity}</p>
+            </div>
+        `;
+        container.appendChild(itemEl);
+    });
+
+    updateSummary(subtotal);
+}
+
+function updateSummary(subtotal) {
+    const shippingMethod = document.querySelector('input[name="shipping"]:checked').value;
+    let shippingCost = 30000; // Standard
+    if (shippingMethod === 'express') {
+        shippingCost = 60000;
+    }
+
+    const total = subtotal + shippingCost;
+
+    document.getElementById('summary-subtotal').textContent = formatCurrency(subtotal);
+    document.getElementById('summary-shipping').textContent = formatCurrency(shippingCost);
+    document.getElementById('summary-total').textContent = formatCurrency(total);
+}
+
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+    const icon = toast.querySelector('i');
+    
+    toastMessage.textContent = message;
+    
+    if (type === 'error') {
+        toast.classList.remove('border-green-500');
+        toast.classList.add('border-red-500');
+        icon.classList.remove('fa-check-circle', 'text-green-500');
+        icon.classList.add('fa-exclamation-circle', 'text-red-500');
+    } else {
+        toast.classList.remove('border-red-500');
+        toast.classList.add('border-green-500');
+        icon.classList.remove('fa-exclamation-circle', 'text-red-500');
+        icon.classList.add('fa-check-circle', 'text-green-500');
+    }
+    
+    toast.style.transform = 'translateX(0)';
+    
+    setTimeout(() => {
+        hideToast();
+    }, 3000);
+}
+
+function hideToast() {
+    const toast = document.getElementById('toast');
+    toast.style.transform = 'translateX(140%)';
+}
+
+async function submitOrder() {
+    clearErrors();
+    // Validate form
+    const fullName = document.getElementById('fullName').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const address = document.getElementById('address').value.trim();
+    const province = document.getElementById('province').value.trim();
+    const district = document.getElementById('district').value.trim();
+
+    let firstInvalid = null;
+    const flag = (id, message) => {
+        setError(id, message);
+        if (!firstInvalid) firstInvalid = document.getElementById(id);
+    };
+
+    if (!fullName) flag('fullName', 'Vui lòng nhập họ tên');
+    if (!phone) flag('phone', 'Vui lòng nhập số điện thoại');
+    if (!address) flag('address', 'Vui lòng nhập địa chỉ chi tiết');
+    if (!province) flag('province', 'Vui lòng nhập tỉnh/thành phố');
+    if (!district) flag('district', 'Vui lòng nhập quận/huyện');
+
+    if (firstInvalid) {
+        firstInvalid.focus({ preventScroll: true });
+        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        showToast('Vui lòng bổ sung thông tin còn thiếu', 'error');
+        return;
+    }
+
+    const fullAddress = `${address}, ${district}, ${province}`;
+    const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+    const shippingMethod = document.querySelector('input[name="shipping"]:checked').value;
+    const note = document.getElementById('note').value.trim();
+    
+    const selectedItems = JSON.parse(localStorage.getItem('selectedCartItems') || '[]');
+
+    if (selectedItems.length === 0) {
+        showToast('Không có sản phẩm để đặt hàng', 'error');
+        return;
+    }
+
+    const cartItemsPayload = selectedItems.map(item => ({
+        cartItemId: Number(item.id),
+        productId: item.productId ? Number(item.productId) : undefined,
+        quantity: Number(item.quantity) || 1,
+        price: Number(item.price) || 0
+    }));
+
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+    try {
+        const response = await fetch('/api/order/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                fullName,
+                phone,
+                email: document.getElementById('email').value.trim(),
+                shippingAddress: fullAddress,
+                paymentMethod,
+                shippingMethod,
+                note,
+                cartItems: cartItemsPayload
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showToast('Đặt hàng thành công! Đang chuyển hướng...', 'success');
+            localStorage.removeItem('selectedCartItems');
+            
+            setTimeout(() => {
+                window.location.href = `/user/order-history?orderId=${data.data.orderId}`;
+            }, 2000);
+        } else {
+            showToast(data.message || 'Có lỗi xảy ra khi đặt hàng', 'error');
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('Không thể kết nối đến máy chủ', 'error');
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+}
+
+// Update shipping when selection changes
+document.querySelectorAll('input[name="shipping"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+        const selectedItems = JSON.parse(localStorage.getItem('selectedCartItems') || '[]');
+        let subtotal = selectedItems.reduce((sum, item) => sum + (item.quantity * (item.price || item.priceSnapshot || 0)), 0);
+        updateSummary(subtotal);
+    });
+});
+
+// Load items on page load
+async function initializeCheckoutPage() {
+    const items = await fetchProductDetails();
+    renderOrderItems(items);
+}
+
+// Initialize on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+    initializeCheckoutPage();
+});
+
+// Also call it directly in case DOMContentLoaded has already fired
+initializeCheckoutPage();
+</script>
 
 </body>
 </html>
