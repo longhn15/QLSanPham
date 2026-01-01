@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${isEdit} ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'">Form Sản phẩm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    
+    <div class="min-h-screen flex items-center justify-center p-6">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl">
+            
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4 rounded-t-lg">
+                <h2 class="text-2xl font-bold text-white flex items-center">
+                    <i class="fas fa-box mr-3"></i>
+                    <span th:text="${isEdit} ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'">Form Sản phẩm</span>
+                </h2>
+            </div>
+
+            <!-- Form Body -->
+            <form th:action="${isEdit} ? @{/admin/products/update/{id}(id=${productId})} : @{/admin/products/save}" 
+                  method="post" 
+                  th:object="${product}"
+                  class="p-6 space-y-6">
+                
+                <!-- Error Messages -->
+                <div th:if="${errorMessage}" class="p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-center">
+                    <i class="fas fa-exclamation-circle mr-3"></i>
+                    <span th:text="${errorMessage}"></span>
+                </div>
+
+                <!-- Product Name -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-tag mr-1"></i>Tên sản phẩm <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                           th:field="*{name}"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                           placeholder="Nhập tên sản phẩm">
+                    <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="mt-1 text-sm text-red-600"></p>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-align-left mr-1"></i>Mô tả
+                    </label>
+                    <textarea th:field="*{description}"
+                              rows="4"
+                              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                              placeholder="Nhập mô tả sản phẩm"></textarea>
+                    <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="mt-1 text-sm text-red-600"></p>
+                </div>
+
+                <!-- Price and Stock -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Price -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-dollar-sign mr-1"></i>Giá (VNĐ) <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number" 
+                               th:field="*{price}"
+                               step="0.01"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                               placeholder="0">
+                        <p th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="mt-1 text-sm text-red-600"></p>
+                    </div>
+
+                    <!-- Stock Quantity -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-cubes mr-1"></i>Số lượng tồn kho <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number" 
+                               th:field="*{stockQuantity}"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                               placeholder="0">
+                        <p th:if="${#fields.hasErrors('stockQuantity')}" th:errors="*{stockQuantity}" class="mt-1 text-sm text-red-600"></p>
+                    </div>
+                </div>
+
+                <!-- Category and Status -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Category -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-list mr-1"></i>Danh mục <span class="text-red-500">*</span>
+                        </label>
+                        <select th:field="*{categoryId}"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">-- Chọn danh mục --</option>
+                            <option th:each="category : ${categories}" 
+                                    th:value="${category.id}" 
+                                    th:text="${category.name}">Category</option>
+                        </select>
+                        <p th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}" class="mt-1 text-sm text-red-600"></p>
+                    </div>
+
+                    <!-- Active Status -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-toggle-on mr-1"></i>Trạng thái
+                        </label>
+                        <div class="flex items-center space-x-4 mt-3">
+                            <label class="inline-flex items-center">
+                                <input type="radio" th:field="*{isActive}" value="true" class="form-radio text-green-600">
+                                <span class="ml-2 text-gray-700">Hoạt động</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" th:field="*{isActive}" value="false" class="form-radio text-gray-600">
+                                <span class="ml-2 text-gray-700">Tạm dừng</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image URL -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-image mr-1"></i>URL hình ảnh
+                    </label>
+                    <input type="text" 
+                           th:field="*{imageUrl}"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                           placeholder="https://example.com/image.jpg">
+                    <p th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}" class="mt-1 text-sm text-red-600"></p>
+                    
+                    <!-- Image Preview -->
+                    <div class="mt-3" th:if="*{imageUrl != null && !imageUrl.isEmpty()}">
+                        <img th:src="*{imageUrl}" 
+                             alt="Preview" 
+                             class="w-32 h-32 object-cover rounded-lg border border-gray-300"
+                             onerror="this.style.display='none'">
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
+                    <a th:href="@{/admin/products}" 
+                       class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-times mr-2"></i>Hủy
+                    </a>
+                    <button type="submit" 
+                            class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                        <i class="fas fa-save mr-2"></i>
+                        <span th:text="${isEdit} ? 'Cập nhật' : 'Thêm mới'">Lưu</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
