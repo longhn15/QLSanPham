@@ -142,4 +142,71 @@ public class OrderService {
         orderRepository.save(order);
     }
 
+    @Transactional(readOnly = true)
+    public Page<Order> searchOrdersForAdmin(OrderStatus status, Boolean isFlashSale, String keyword, Pageable pageable) {
+        String safeKeyword = (keyword != null && !keyword.isBlank()) ? keyword.trim() : null;
+        return orderRepository.searchOrders(status, isFlashSale, safeKeyword, pageable);
+    }
+
+    @Transactional
+    public void updateStatus(Long orderId, OrderStatus targetStatus) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Đơn hàng không tồn tại"));
+
+        OrderStatus current = order.getStatus();
+
+        if (targetStatus == OrderStatus.CANCELLED) {
+            if (current == OrderStatus.DELIVERED) {
+                throw new IllegalStateException("Không thể hủy đơn đã giao");
+            }
+            order.setStatus(OrderStatus.CANCELLED);
+            orderRepository.save(order);
+            return;
+        }
+
+        switch (targetStatus) {
+            case CONFIRMED -> {
+                if (current != OrderStatus.PENDING) {
+                    throw new IllegalStateException("Chỉ đơn đang chờ xác nhận mới được duyệt");
+                }
+                order.setStatus(OrderStatus.CONFIRMED);
+            }
+            case SHIPPED -> {
+                if (current != OrderStatus.CONFIRMED) {
+                    throw new IllegalStateException("Chỉ đơn đã xác nhận mới được chuyển sang đang giao");
+                }
+                order.setStatus(OrderStatus.SHIPPED);
+            }
+            case DELIVERED -> {
+                if (current != OrderStatus.SHIPPED) {
+                    throw new IllegalStateException("Chỉ đơn đang giao mới đánh dấu đã giao");
+                }
+                order.setStatus(OrderStatus.DELIVERED);
+            }
+            default -> throw new IllegalArgumentException("Trạng thái không hợp lệ");
+        }
+
+        orderRepository.save(order);
+    }
+
+    @Transactional(readOnly = true)
+    public Order getOrderWithDetails(Long orderId) {
+        Order order = getOrderById(orderId);
+        // Trigger lazy associations for view rendering
+        order.getOrderDetails().forEach(detail -> {
+            if (detail.getProduct() != null) {
+                detail.getProduct().getName();
+            }
+            if (detail.getFlashSaleItem() != null && detail.getFlashSaleItem().getFlashSaleSession() != null) {
+                detail.getFlashSaleItem().getFlashSaleSession().getName();
+            }
+        });
+        return order;
+    }
+
+    @Transactional(readOnly = true)
+    public long countPendingOrders() {
+        return orderRepository.countByStatus(OrderStatus.PENDING);
+    }
+
 }
