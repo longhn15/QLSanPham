@@ -30,12 +30,15 @@ public class AdminCategoryController {
   @GetMapping("")
   public String list(@RequestParam(value="q", required=false, defaultValue="") String q,
                      Model model,
-                     @RequestParam(defaultValue="0") int page) {
-    Page<Category> categoryPage = categoryService.search(q, page, 10);
+                     @RequestParam(defaultValue="0") int page,
+                     @RequestParam(defaultValue="8") int size) {
+    Page<Category> categoryPage = categoryService.search(q, page, size);
     
     model.addAttribute("categories", categoryPage.getContent());
-    model.addAttribute("currentPage", page);  
+    model.addAttribute("currentPage", page);
+    model.addAttribute("pageSize", size);
     model.addAttribute("totalPages", categoryPage.getTotalPages());
+    model.addAttribute("totalItems", categoryPage.getTotalElements());
     model.addAttribute("searchQuery", q);
     
     return "admin/CategoryAdmin"; 

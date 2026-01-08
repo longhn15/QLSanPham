@@ -42,9 +42,13 @@
 
                 <!-- Group: Flash Sale Manager -->
                 <div class="text-gray-400 text-xs uppercase font-bold px-3 mt-6 mb-1">Quản lý Flash Sale</div>
-                <a href="#" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors">
+                <a href="/admin/flash-sale/sessions" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors">
                     <i class="fas fa-calendar-alt w-6 text-orange-400"></i>
                     <span class="font-medium">Chiến dịch Sale</span>
+                </a>
+                <a href="/admin/flash-sale/items" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors">
+                    <i class="fas fa-tags w-6 text-pink-400"></i>
+                    <span class="font-medium">Sản phẩm Sale</span>
                 </a>
 
                 <!-- Group: General -->
@@ -61,7 +65,7 @@
                     <i class="fas fa-warehouse w-6 text-yellow-400"></i>
                     <span>Quản lý Kho</span>
                 </a>
-                <a href="#" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors">
+                <a href="/admin/orders" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors">
                     <i class="fas fa-shopping-cart w-6 text-blue-400"></i>
                     <span>Đơn hàng</span>
                 </a>
@@ -171,23 +175,56 @@
                             </table>
                         </div>
 
-                        <!-- Pagination -->
-                        <div th:if="${totalPages > 1}" class="mt-6 flex justify-center gap-2">
-                            <a th:if="${currentPage > 0}" 
-                               th:href="@{/admin/categories(page=${currentPage - 1}, q=${searchQuery})}"
-                               class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
-                                <i class="fas fa-chevron-left"></i> Trước
-                            </a>
-                            
-                            <span class="px-4 py-2 bg-blue-600 text-white rounded-lg">
-                                Trang <span th:text="${currentPage + 1}"></span> / <span th:text="${totalPages}"></span>
-                            </span>
-                            
-                            <a th:if="${currentPage < totalPages - 1}" 
-                               th:href="@{/admin/categories(page=${currentPage + 1}, q=${searchQuery})}"
-                               class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
-                                Sau <i class="fas fa-chevron-right"></i>
-                            </a>
+                        <!-- Pagination (same style as products) -->
+                        <div th:if="${totalPages > 1}" class="bg-gray-50 px-4 py-3 mt-6 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                            <div class="flex-1 flex justify-between sm:hidden">
+                                <a th:if="${currentPage > 0}" 
+                                   th:href="@{/admin/categories(page=${currentPage - 1}, q=${searchQuery}, size=${pageSize})}"
+                                   class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                    Trước
+                                </a>
+                                <a th:if="${currentPage < totalPages - 1}" 
+                                   th:href="@{/admin/categories(page=${currentPage + 1}, q=${searchQuery}, size=${pageSize})}"
+                                   class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                    Sau
+                                </a>
+                            </div>
+                            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                                <div class="flex items-center gap-3 text-sm text-gray-700">
+                                    <p>
+                                        Hiển thị trang <span class="font-medium" th:text="${currentPage + 1}">1</span>
+                                        / <span class="font-medium" th:text="${totalPages}">1</span>
+                                        (<span th:text="${totalItems}">0</span> danh mục)
+                                    </p>
+                                </div>
+                                <div>
+                                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                                        <a th:if="${currentPage > 0}" 
+                                           th:href="@{/admin/categories(page=${currentPage - 1}, q=${searchQuery}, size=${pageSize})}"
+                                           class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </a>
+
+                                        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                                            <a th:if="${i == currentPage}"
+                                               class="relative inline-flex items-center px-4 py-2 border border-blue-500 bg-blue-50 text-sm font-medium text-blue-600">
+                                                <span th:text="${i + 1}">1</span>
+                                            </a>
+                                            <a th:unless="${i == currentPage}"
+                                               th:href="@{/admin/categories(page=${i}, q=${searchQuery}, size=${pageSize})}"
+                                               class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                                <span th:text="${i + 1}">1</span>
+                                            </a>
+                                        </span>
+
+                                        <a th:if="${currentPage < totalPages - 1}" 
+                                           th:href="@{/admin/categories(page=${currentPage + 1}, q=${searchQuery}, size=${pageSize})}"
+                                           class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                    </nav>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
